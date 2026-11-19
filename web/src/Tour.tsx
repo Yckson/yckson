@@ -6,8 +6,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { portfolios, type Language } from './catalog'
 
 const labels = {
-  en: { title:'Museum tour', reception:'Reception', terminal:'Computer terminal', wing:'Computer Science wing', left:'Look left', right:'Look right', open:'Enter portfolio', index:'View portfolios', hint:'Choose a stop. Drag to look around.', loading:'Loading the hall…' },
-  pt: { title:'Passeio pelo museu', reception:'Recepção', terminal:'Terminal de computador', wing:'Ala de Ciência da Computação', left:'Olhar à esquerda', right:'Olhar à direita', open:'Entrar no portfólio', index:'Ver portfólios', hint:'Escolha uma parada. Arraste para olhar ao redor.', loading:'Carregando o hall…' }
+  en: { title:'Museum tour', reception:'Reception', terminal:'Computer terminal', wing:'Computer Science wing', left:'Look left', right:'Look right', up:'Look up', down:'Look down', open:'Enter portfolio', index:'View portfolios', hint:'Choose a stop. Drag to look around.', loading:'Loading the hall…' },
+  pt: { title:'Passeio pelo museu', reception:'Recepção', terminal:'Terminal de computador', wing:'Ala de Ciência da Computação', left:'Olhar à esquerda', right:'Olhar à direita', up:'Olhar para cima', down:'Olhar para baixo', open:'Entrar no portfólio', index:'Ver portfólios', hint:'Escolha uma parada. Arraste para olhar ao redor.', loading:'Carregando o hall…' }
 }
 const stops = ['reception','terminal','wing'] as const
 type Stop = typeof stops[number]
@@ -71,6 +71,6 @@ export default function Tour({ language, reduced, onLoss }: { language: Language
       {!ready && <span className="loading" role="status">{t.loading}</span>}
     </div>
     <div className="controls"><p>{t.hint}</p><div className="stop-row">{stops.map(s => <button key={s} aria-pressed={s === stop} onClick={() => {setLook({yaw:0,pitch:0});setParams({stop:s},{replace:true})}}>{t[s]}</button>)}</div>
-    <div className="stop-row"><button onClick={() => setLook(v => ({...v,yaw:v.yaw+.3}))}>← {t.left}</button><button onClick={() => setLook(v => ({...v,yaw:v.yaw-.3}))}>{t.right} →</button>{area && <Link className="primary" to={root+'/portfolio/'+area.slug+'?from='+stop}>{t.open} ↗</Link>}</div></div>
+    <div className="stop-row"><button onClick={() => setLook(v => ({...v,yaw:v.yaw+.3}))}>← {t.left}</button><button onClick={() => setLook(v => ({...v,yaw:v.yaw-.3}))}>{t.right} →</button><button onClick={() => setLook(v => ({...v,pitch:Math.min(.6,v.pitch+.2)}))}>↑ {t.up}</button><button onClick={() => setLook(v => ({...v,pitch:Math.max(-.6,v.pitch-.2)}))}>↓ {t.down}</button>{area && <Link className="primary" to={root+'/portfolio/'+area.slug+'?from='+stop}>{t.open} ↗</Link>}</div></div>
   </section>
 }
