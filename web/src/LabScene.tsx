@@ -16,6 +16,7 @@ import {
   Vector3,
 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { CrtGlobe } from "./CrtGlobe";
 import { PixelFinish } from "./PixelFinish";
 
 export const destinations = ["terminal", "wing"] as const;
@@ -195,6 +196,7 @@ export default function LabScene({
           if (d && e.delta < 5) onPick(d);
         }}
       />
+      <CrtGlobe model={model} reduced={reduced} />
       <PixelFinish model={model} active={active} />
     </>
   );
