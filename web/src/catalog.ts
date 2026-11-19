@@ -4,8 +4,8 @@ export const portfolios = [{
   stop: 'wing',
   title: { en: 'Computer Science', pt: 'Ciência da Computação' },
   intro: {
-    en: 'Welcome to the Computer Science wing of my portfolio museum.',
-    pt: 'Boas-vindas à ala de Ciência da Computação do meu museu de portfólios.'
+    en: 'Welcome to the Computer Science wing of my home lab.',
+    pt: 'Boas-vindas à ala de Ciência da Computação do meu laboratório.'
   }
 }] as const
 

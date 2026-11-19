@@ -1,0 +1,224 @@
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.immersive {
+  max-width: none;
+  position: relative;
+  background: #10251b;
+  --hud: #0c1b16;
+  --hud-ink: #e5f2e8;
+  --signal: #f5d872;
+}
+.immersive header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  min-height: 0;
+  background: transparent;
+  padding: clamp(12px, 2.2vw, 34px);
+  gap: 10px;
+  align-items: flex-start;
+  pointer-events: none;
+  color: var(--hud-ink);
+}
+.immersive .brand,
+.immersive .utility,
+.return-command {
+  pointer-events: auto;
+  background: rgb(11 25 20 / 0.93);
+  border: 1px solid #729582;
+  padding: 10px 14px;
+}
+.immersive .brand {
+  font-size: clamp(16px, 1.6vw, 25px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  min-height: 45px;
+}
+.immersive .mark {
+  width: 19px;
+  height: 19px;
+  background: #c0efd7;
+}
+.immersive .utility {
+  padding: 2px 7px;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 45px;
+}
+.immersive .settings,
+.settings {
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+}
+.index-shortcut {
+  font-size: 14px;
+  font-weight: 620;
+  padding: 6px;
+}
+.immersive nav a[aria-current] {
+  box-shadow: inset 0 -2px #b2ebc8;
+}
+.immersive header .brand,
+.immersive header .utility,
+.waypoint,
+.return-command {
+  transition: opacity 0.18s;
+}
+.immersive:has(.lab[data-interacting="true"])
+  header
+  :is(.brand, .utility):not(:hover):not(:focus-within),
+.lab[data-interacting="true"]
+  :is(.waypoint, .return-command):not(:hover):not(:focus-visible) {
+  opacity: 0.55;
+}
+.immersive[data-contrast="true"] header :is(.brand, .utility),
+.immersive[data-contrast="true"] :is(.waypoint, .return-command) {
+  opacity: 1 !important;
+  background: #000;
+  color: white;
+  border-color: white;
+}
+.lab,
+.viewport {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+.viewport {
+  touch-action: none;
+  cursor: grab;
+  background: #122019 url("../public/museum/hall.jpg") center/cover;
+}
+.viewport[data-target]:not([data-target=""]) {
+  cursor: pointer;
+}
+.viewport:active {
+  cursor: grabbing;
+}
+.viewport:focus-visible {
+  outline: 2px solid #f5d872;
+  outline-offset: -3px;
+}
+.loading,
+.return-command {
+  position: absolute;
+  color: #ebf7ef;
+  background: #112219;
+  left: clamp(12px, 2.2vw, 34px);
+  padding: 10px 14px;
+}
+.loading {
+  top: 48%;
+}
+.return-command {
+  top: calc(clamp(12px, 2.2vw, 34px) + 55px);
+  font-size: 14px;
+}
+.waypoint {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  align-items: center;
+  gap: 12px;
+  display: flex;
+  text-align: left;
+  padding: 8px 14px 9px 9px;
+  color: #f2f9ee;
+  background: rgb(10 24 18 / 0.94);
+  border: 1px solid #86aa93;
+  border-left: 3px solid #bbebbd;
+  box-shadow: 0 5px 14px #06100a66;
+  max-width: 45vw;
+  cursor: pointer;
+}
+.waypoint[hidden] {
+  display: none;
+}
+.waypoint::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 14px;
+  top: 100%;
+  left: 50%;
+  background: #cee7bf;
+}
+.waypoint-glyph {
+  border: 1px solid #8bb599;
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  color: #cefacb;
+  font: 600 17px monospace;
+}
+.waypoint small,
+.waypoint strong {
+  display: block;
+}
+.waypoint small {
+  font: 500 12px/1.3 monospace;
+  color: #b6d9bf;
+}
+.waypoint strong {
+  font-size: clamp(13px, 1.1vw, 17px);
+  line-height: 1.25;
+  font-weight: 600;
+}
+.waypoint:hover,
+.waypoint:focus-visible,
+.return-command:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+  background: #20261a;
+}
+@media (max-width: 680px) {
+  .immersive header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .immersive .utility {
+    gap: 0;
+  }
+  .immersive .brand,
+  .immersive .utility {
+    min-height: 36px;
+  }
+  .immersive .brand {
+    padding: 7px 9px;
+  }
+  .immersive .settings,
+  .immersive nav a,
+  .index-shortcut {
+    font-size: 12px;
+    padding: 7px;
+  }
+  .waypoint {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+  .waypoint-glyph {
+    min-width: 22px;
+    height: 22px;
+  }
+  .return-command {
+    top: 98px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .immersive * {
+    transition: none !important;
+  }
+}
