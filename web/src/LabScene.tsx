@@ -160,8 +160,7 @@ export default function LabScene({
         projected.z < -1 ||
         projected.z > 1 ||
         Math.abs(projected.x) > 1.35 ||
-        Math.abs(projected.y) > 0.92 ||
-        (id === "terminal" && stop === "terminal");
+        Math.abs(projected.y) > 0.92;
       const margin = el.offsetWidth / 2 + 8;
       el.style.left =
         Math.max(

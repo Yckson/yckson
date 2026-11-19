@@ -1,13 +1,14 @@
 export type Language = 'en' | 'pt'
-export const portfolios = [{
+export const computerScience = {
   slug: 'computer-science',
-  stop: 'wing',
+  stop: 'terminal',
   title: { en: 'Computer Science', pt: 'Ciência da Computação' },
   intro: {
     en: 'Welcome to the Computer Science wing of my home lab.',
     pt: 'Boas-vindas à ala de Ciência da Computação do meu laboratório.'
   }
-}] as const
+} as const
+export const portfolios = [computerScience] as const
 
 export function readPreference(key: string) {
   try { return localStorage.getItem('museum.' + key) } catch { return null }

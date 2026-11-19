@@ -6,28 +6,30 @@ import LabScene, {
   type Destination,
   type Stop,
 } from "./LabScene";
-import { portfolios, type Language } from "./catalog";
+import { computerScience, type Language } from "./catalog";
 
 const copy = {
   en: {
     name: "Repository Hub",
-    terminal: "Computer terminal",
-    wing: "Computer Science",
+    terminal: computerScience.title.en,
+    wing: "Exit",
+    directory: "View portfolios",
     move: "Approach",
     enter: "Enter portfolio",
     back: "Step back",
     loading: "Opening the lab…",
-    hint: "Drag or use the arrow keys to look around. Press 1 for the terminal, 2 for Computer Science, or Escape to step back.",
+    hint: "Drag or use the arrow keys to look around. Press 1 for Computer Science, 2 to exit to the portfolio list, or Escape to step back.",
   },
   pt: {
     name: "Hub de repositórios",
-    terminal: "Terminal de computador",
-    wing: "Ciência da Computação",
+    terminal: computerScience.title.pt,
+    wing: "Saída",
+    directory: "Ver portfólios",
     move: "Aproximar",
     enter: "Entrar no portfólio",
     back: "Voltar à entrada",
     loading: "Abrindo o laboratório…",
-    hint: "Arraste ou use as setas para olhar ao redor. Pressione 1 para o terminal, 2 para Ciência da Computação ou Escape para voltar à entrada.",
+    hint: "Arraste ou use as setas para olhar ao redor. Pressione 1 para Ciência da Computação, 2 para sair para a lista de portfólios ou Escape para voltar à entrada.",
   },
 };
 export default function Tour({
@@ -71,9 +73,10 @@ export default function Tour({
     interacting();
   }
   function pick(d: Destination) {
-    if (d === "wing" && stop === d) {
-      const portfolio = portfolios.find((p) => p.stop === d)!;
-      navigate("/" + language + "/portfolio/" + portfolio.slug + "?from=" + d);
+    if (d === "wing") {
+      navigate("/" + language + "/portfolios");
+    } else if (stop === computerScience.stop) {
+      navigate("/" + language + "/portfolio/" + computerScience.slug + "?from=" + d);
     } else visit(d);
   }
   function rotate(dx: number, dy: number) {
@@ -198,7 +201,7 @@ export default function Tour({
             </span>
             <span>
               <small>
-                {d === "wing" && stop === "wing" ? t.enter : t.move}
+                {d === "wing" ? t.directory : stop === d ? t.enter : t.move}
               </small>
               <strong>{t[d]}</strong>
             </span>
