@@ -20,9 +20,9 @@ import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUnifo
 import { CrtGlobe } from "./CrtGlobe";
 import { PixelFinish } from "./PixelFinish";
 
-export const destinations = ["terminal", "wing"] as const;
+export const destinations = ["terminal", "wing", "books"] as const;
 export type Destination = (typeof destinations)[number];
-export type Stop = Destination | "reception";
+export type Stop = Exclude<Destination, "books"> | "reception";
 type Props = {
   stop: Stop;
   yaw: number;
@@ -39,6 +39,7 @@ function destination(object: Object3D | null): Destination | null {
   while (object) {
     if (object.name === "target_terminal") return "terminal";
     if (object.name === "target_wing") return "wing";
+    if (object.name === "target_books") return "books";
     object = object.parent;
   }
   return null;
@@ -97,7 +98,7 @@ export default function LabScene({
         const position = model
           .getObjectByName("aim_" + id)!
           .getWorldPosition(new Vector3());
-        position.y += id === "terminal" ? 0.88 : 0.91;
+        if (id !== "books") position.y += id === "terminal" ? 0.88 : 0.91;
         return { id, position };
       }),
     [model],

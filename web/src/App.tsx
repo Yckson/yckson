@@ -27,6 +27,8 @@ const copy = {
     name: "Repository Hub",
     title: "Repository Hub",
     index: "Portfolios",
+    articles: "Articles",
+    emptyArticles: "No articles published yet.",
     wing: "Portfolio wing",
     back: "Return to the lab",
     skip: "Skip to content",
@@ -36,6 +38,8 @@ const copy = {
     name: "Hub de repositórios",
     title: "Hub de repositórios",
     index: "Portfólios",
+    articles: "Artigos",
+    emptyArticles: "Nenhum artigo publicado por enquanto.",
     wing: "Ala de portfólio",
     back: "Voltar ao laboratório",
     skip: "Pular para o conteúdo",
@@ -51,7 +55,8 @@ function MuseumPage() {
   const root = "/" + language;
   const portfolio = portfolios.find((item) => item.slug === slug);
   const index = location.pathname.endsWith("/portfolios");
-  const touring = !index && !portfolio;
+  const articles = location.pathname.endsWith("/articles");
+  const touring = !index && !portfolio && !articles;
   const prefs = useDisplayPreferences();
 
   const navigate = useNavigate();
@@ -67,10 +72,11 @@ function MuseumPage() {
   useEffect(() => {
     document.documentElement.lang = language === "pt" ? "pt-BR" : "en";
     document.title =
-      (portfolio?.title[language] ?? (index ? t.index : t.title)) + " · Yckson";
+      (portfolio?.title[language] ??
+        (index ? t.index : articles ? t.articles : t.title)) + " · Yckson";
     content.current?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
-  }, [location.pathname, language, portfolio, index, t]);
+  }, [location.pathname, language, portfolio, index, articles, t]);
   if ((lang !== "en" && lang !== "pt") || (slug && !portfolio))
     return <Navigate replace to={"/" + initialLanguage()} />;
   return (
@@ -171,7 +177,19 @@ function MuseumPage() {
                 </span>
               </Link>
             ))}
+            <Link className="secondary" to={root + "/articles"}>
+              {t.articles} ↗
+            </Link>
           </section>
+        )}
+        {articles && (
+          <article className="wing">
+            <h1>{t.articles}</h1>
+            <p>{t.emptyArticles}</p>
+            <Link className="secondary" to={root}>
+              {t.back} ←
+            </Link>
+          </article>
         )}
         {portfolio && (
           <article className="wing">
@@ -198,6 +216,7 @@ export default function App() {
           "/:lang",
           "/:lang/museum",
           "/:lang/portfolios",
+          "/:lang/articles",
           "/:lang/portfolio/:slug",
         ].map((path) => (
           <Route key={path} path={path} element={<MuseumPage />} />

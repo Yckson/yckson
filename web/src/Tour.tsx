@@ -13,23 +13,27 @@ const copy = {
     name: "Repository Hub",
     terminal: computerScience.title.en,
     wing: "Exit",
+    books: "Articles",
+    browse: "Browse",
     directory: "View portfolios",
     move: "Approach",
     enter: "Enter portfolio",
     back: "Step back",
     loading: "Opening the lab…",
-    hint: "Drag or use the arrow keys to look around. Press 1 for Computer Science, 2 to exit to the portfolio list, or Escape to step back.",
+    hint: "Drag or use the arrow keys to look around. Press 1 for Computer Science, 2 to exit to the portfolio list, 3 for articles, or Escape to step back.",
   },
   pt: {
     name: "Hub de repositórios",
     terminal: computerScience.title.pt,
     wing: "Saída",
+    books: "Artigos",
+    browse: "Explorar",
     directory: "Ver portfólios",
     move: "Aproximar",
     enter: "Entrar no portfólio",
     back: "Voltar à entrada",
     loading: "Abrindo o laboratório…",
-    hint: "Arraste ou use as setas para olhar ao redor. Pressione 1 para Ciência da Computação, 2 para sair para a lista de portfólios ou Escape para voltar à entrada.",
+    hint: "Arraste ou use as setas para olhar ao redor. Pressione 1 para Ciência da Computação, 2 para sair para a lista de portfólios, 3 para artigos ou Escape para voltar à entrada.",
   },
 };
 export default function Tour({
@@ -42,8 +46,9 @@ export default function Tour({
   onLoss: () => void;
 }) {
   const [params, setParams] = useSearchParams();
+  const requested = params.get("stop");
   const stop: Stop =
-    destinations.find((s) => s === params.get("stop")) ?? "reception";
+    requested === "terminal" || requested === "wing" ? requested : "reception";
   const navigate = useNavigate();
   const [look, setLook] = useState({ yaw: 0, pitch: 0 });
   const [hover, setHover] = useState<Destination | null>(null);
@@ -73,10 +78,14 @@ export default function Tour({
     interacting();
   }
   function pick(d: Destination) {
-    if (d === "wing") {
+    if (d === "books") {
+      navigate("/" + language + "/articles");
+    } else if (d === "wing") {
       navigate("/" + language + "/portfolios");
     } else if (stop === computerScience.stop) {
-      navigate("/" + language + "/portfolio/" + computerScience.slug + "?from=" + d);
+      navigate(
+        "/" + language + "/portfolio/" + computerScience.slug + "?from=" + d,
+      );
     } else visit(d);
   }
   function rotate(dx: number, dy: number) {
@@ -120,6 +129,9 @@ export default function Tour({
               break;
             case "2":
               pick("wing");
+              break;
+            case "3":
+              pick("books");
               break;
             case "Escape":
               visit("reception");
@@ -201,7 +213,13 @@ export default function Tour({
             </span>
             <span>
               <small>
-                {d === "wing" ? t.directory : stop === d ? t.enter : t.move}
+                {d === "books"
+                  ? t.browse
+                  : d === "wing"
+                    ? t.directory
+                    : stop === d
+                      ? t.enter
+                      : t.move}
               </small>
               <strong>{t[d]}</strong>
             </span>
