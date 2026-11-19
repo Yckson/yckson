@@ -7,19 +7,16 @@ import {
 } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import {
-  Color,
+  MeshStandardMaterial,
   Euler,
   Mesh,
   Object3D,
   PerspectiveCamera,
-  Vector2,
+  NearestFilter,
   Vector3,
 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
-import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { PixelFinish } from "./PixelFinish";
 
 export const destinations = ["terminal", "wing"] as const;
 export type Destination = (typeof destinations)[number];
@@ -44,47 +41,6 @@ function destination(object: Object3D | null): Destination | null {
   }
   return null;
 }
-function Highlight({
-  model,
-  active,
-}: {
-  model: Object3D;
-  active: Destination | null;
-}) {
-  const { gl, scene, camera, size, invalidate } = useThree();
-  const passes = useMemo(() => {
-    const composer = new EffectComposer(gl);
-    const render = new RenderPass(scene, camera);
-    const outline = new OutlinePass(new Vector2(1, 1), scene, camera);
-    outline.visibleEdgeColor = new Color("#ffd74a");
-    outline.hiddenEdgeColor.setRGB(0, 0, 0);
-    outline.edgeStrength = 5;
-    outline.edgeGlow = 0.85;
-    outline.edgeThickness = 2;
-    const output = new OutputPass();
-    for (const pass of [render, outline, output]) composer.addPass(pass);
-    return { composer, outline, output };
-  }, [gl, scene, camera]);
-  useEffect(
-    () => () => {
-      passes.outline.dispose();
-      passes.output.dispose();
-      passes.composer.dispose();
-    },
-    [passes],
-  );
-  useLayoutEffect(() => {
-    passes.composer.setSize(size.width, size.height);
-    const target = active && model.getObjectByName("target_" + active);
-    passes.outline.selectedObjects = target ? [target] : [];
-    invalidate();
-  }, [size, active, model, passes, invalidate]);
-  useFrame(() => {
-    if (active) passes.composer.render();
-    else gl.render(scene, camera);
-  }, 1);
-  return null;
-}
 export default function LabScene({
   stop,
   yaw,
@@ -103,6 +59,24 @@ export default function LabScene({
   );
   const { camera, gl, invalidate, size } = useThree();
   const first = useRef(true);
+  const fixtures = useMemo(() => {
+    const lights: {
+      name: string;
+      position: Vector3;
+      color: string;
+      power: number;
+    }[] = [];
+    model.traverse((node) => {
+      if (typeof node.userData.fixturePower === "number")
+        lights.push({
+          name: node.name,
+          position: node.getWorldPosition(new Vector3()),
+          color: node.userData.fixtureColor,
+          power: node.userData.fixturePower,
+        });
+    });
+    return lights;
+  }, [model]);
   const guidePoints = useMemo(
     () =>
       destinations.map((id) => {
@@ -119,7 +93,7 @@ export default function LabScene({
     const target = new Object3D();
     model.getObjectByName("eye_" + stop)!.getWorldPosition(target.position);
     if (stop === "reception" && size.width < size.height)
-      target.position.z += 1.05;
+      target.position.z += 0.38;
     const aim = model
       .getObjectByName("aim_" + stop)!
       .getWorldPosition(new Vector3());
@@ -132,7 +106,7 @@ export default function LabScene({
   }, [model, stop, yaw, pitch, size.width, size.height]);
   useLayoutEffect(() => {
     if (camera instanceof PerspectiveCamera) {
-      camera.fov = size.width < size.height ? 78 : 49;
+      camera.fov = size.width < size.height ? 82 : 55;
       camera.updateProjectionMatrix();
     }
     invalidate();
@@ -140,6 +114,15 @@ export default function LabScene({
   useEffect(() => {
     model.traverse((o) => {
       if (o instanceof Mesh) {
+        for (const material of Array.isArray(o.material)
+          ? o.material
+          : [o.material]) {
+          if (material instanceof MeshStandardMaterial && material.map) {
+            material.map.magFilter = NearestFilter;
+            material.map.minFilter = NearestFilter;
+            material.map.needsUpdate = true;
+          }
+        }
         o.receiveShadow = true;
         o.castShadow = !/plaster|ceiling|diffuser|shade/i.test(o.name);
       }
@@ -185,33 +168,18 @@ export default function LabScene({
   });
   return (
     <>
-      <hemisphereLight color="#c5f7da" groundColor="#345343" intensity={0.48} />
-      <pointLight
-        color="#99ff99"
-        position={[0.3, 1.57, 0.25]}
-        intensity={12}
-        distance={6}
-        castShadow
-        shadow-bias={-0.001}
-      />
-      <pointLight
-        color="#98e9c9"
-        position={[-1.8, 2.7, 2]}
-        intensity={8}
-        distance={7}
-      />
-      <pointLight
-        color="#64e6ae"
-        position={[2.1, 2.8, -2]}
-        intensity={8}
-        distance={6}
-      />
-      <pointLight
-        color="#abf7a8"
-        position={[-2.1, 2.95, -2.6]}
-        intensity={7}
-        distance={5}
-      />
+      <hemisphereLight color="#e2d8d0" groundColor="#745268" intensity={0.88} />
+      {fixtures.map((light) => (
+        <pointLight
+          key={light.name}
+          position={light.position}
+          color={light.color}
+          intensity={light.power}
+          distance={8}
+          castShadow={light.name.startsWith("Front fluorescent")}
+          shadow-bias={-0.001}
+        />
+      ))}{" "}
       <primitive
         object={model}
         onPointerMove={(
@@ -227,7 +195,7 @@ export default function LabScene({
           if (d && e.delta < 5) onPick(d);
         }}
       />
-      <Highlight model={model} active={active} />
+      <PixelFinish model={model} active={active} />
     </>
   );
 }

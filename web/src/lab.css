@@ -222,3 +222,6 @@
     transition: none !important;
   }
 }
+.lab canvas {
+  image-rendering: pixelated;
+}

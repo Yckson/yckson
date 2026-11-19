@@ -152,9 +152,10 @@ export default function Tour({
         }}
       >
         <Canvas
+          gl={{ antialias: false }}
           shadows
           aria-hidden="true"
-          dpr={[1, 1.5]}
+          dpr={0.75}
           frameloop="demand"
           camera={{ near: 0.08, far: 38 }}
         >
