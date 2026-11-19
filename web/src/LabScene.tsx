@@ -16,6 +16,7 @@ import {
   Vector3,
 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { CrtGlobe } from "./CrtGlobe";
 import { PixelFinish } from "./PixelFinish";
 
@@ -66,6 +67,7 @@ export default function LabScene({
       position: Vector3;
       color: string;
       power: number;
+      aperture?: { width: number; height: number; aim: Vector3 };
     }[] = [];
     model.traverse((node) => {
       if (typeof node.userData.fixturePower === "number")
@@ -74,8 +76,19 @@ export default function LabScene({
           position: node.getWorldPosition(new Vector3()),
           color: node.userData.fixtureColor,
           power: node.userData.fixturePower,
+          aperture:
+            node.userData.fixtureKind === "window"
+              ? {
+                  width: node.userData.fixtureWidth,
+                  height: node.userData.fixtureHeight,
+                  aim: model
+                    .getObjectByName("Window_daylight_aim")!
+                    .getWorldPosition(new Vector3()),
+                }
+              : undefined,
         });
     });
+    if (lights.some((light) => light.aperture)) RectAreaLightUniformsLib.init();
     return lights;
   }, [model]);
   const guidePoints = useMemo(
@@ -170,17 +183,29 @@ export default function LabScene({
   return (
     <>
       <hemisphereLight color="#e2d8d0" groundColor="#745268" intensity={0.88} />
-      {fixtures.map((light) => (
-        <pointLight
-          key={light.name}
-          position={light.position}
-          color={light.color}
-          intensity={light.power}
-          distance={8}
-          castShadow={light.name.startsWith("Front fluorescent")}
-          shadow-bias={-0.001}
-        />
-      ))}{" "}
+      {fixtures.map((light) =>
+        light.aperture ? (
+          <rectAreaLight
+            key={light.name}
+            position={light.position}
+            color={light.color}
+            intensity={light.power}
+            width={light.aperture.width}
+            height={light.aperture.height}
+            onUpdate={(source) => source.lookAt(light.aperture!.aim)}
+          />
+        ) : (
+          <pointLight
+            key={light.name}
+            position={light.position}
+            color={light.color}
+            intensity={light.power}
+            distance={8}
+            castShadow={light.name.startsWith("Front fluorescent")}
+            shadow-bias={-0.001}
+          />
+        ),
+      )}{" "}
       <primitive
         object={model}
         onPointerMove={(
