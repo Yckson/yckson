@@ -55,6 +55,7 @@ export default function Tour({
   const [focus, setFocus] = useState<Destination | null>(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
+  const [entering, setEntering] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const viewport = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
@@ -70,6 +71,7 @@ export default function Tour({
     timer.current = setTimeout(() => setBusy(false), 850);
   }
   function visit(next: Stop) {
+    setEntering(false);
     setHover(null);
     setFocus(null);
     setLook({ yaw: 0, pitch: 0 });
@@ -78,6 +80,7 @@ export default function Tour({
     interacting();
   }
   function pick(d: Destination) {
+    if (entering) return;
     if (stop !== d) {
       setArrived(null);
       visit(d);
@@ -89,12 +92,13 @@ export default function Tour({
     } else if (d === "wing") {
       navigate("/" + language + "/portfolios");
     } else {
-      navigate(
-        "/" + language + "/portfolio/" + computerScience.slug + "?from=" + d,
-      );
+      setEntering(true);
+      setHover(null);
+      setFocus(null);
     }
   }
   function rotate(dx: number, dy: number) {
+    if (entering) return;
     interacting();
     setLook((v) => ({
       yaw: v.yaw + dx,
@@ -184,12 +188,14 @@ export default function Tour({
           <color attach="background" args={["#10251b"]} />
           <Suspense fallback={null}>
             <LabScene
+              entering={entering && stop === "terminal"}
+              onScreenFramed={() => navigate("/" + language + "/portfolio/" + computerScience.slug + "?from=terminal")}
               atTerminal={stop === "terminal" && arrived === "terminal"} language={language}
               stop={stop}
               {...look}
               reduced={reduced}
               signs={signs}
-              active={focus ?? hover}
+              active={entering ? null : focus ?? hover}
               onHover={setHover}
               onPick={pick}
               onArrive={setArrived}

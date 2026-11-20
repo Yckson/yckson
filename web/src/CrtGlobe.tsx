@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import {
   CanvasTexture,
   Frustum,
@@ -8,9 +8,13 @@ import {
   NearestFilter,
   Object3D,
   ShaderMaterial,
+  SRGBColorSpace,
+  TextureLoader,
 } from "three";
 
 import { portfolioScreen } from "./portfolioScreen";
+import englishPage from "./assets/portfolio-en.png";
+import portuguesePage from "./assets/portfolio-pt.png";
 import type { Language } from "./catalog";
 
 // A tiny phosphor map gives the rotating wireframe a recognizable east and west.
@@ -125,25 +129,27 @@ function landMask() {
 export function CrtGlobe({
   model,
   reduced,
-  atTerminal, language,
+  atTerminal, language, entering,
 }: {
   model: Object3D;
-  reduced: boolean; atTerminal: boolean; language: Language;
+  reduced: boolean; atTerminal: boolean; language: Language; entering: boolean;
 }) {
   const { camera, invalidate } = useThree();
   const screen = model.getObjectByName("CRT_globe_display");
   const preview = useMemo(() => portfolioScreen(language), [language]);
+  const page = useLoader(TextureLoader, language === "pt" ? portuguesePage : englishPage);
   const blink = useRef({ step: 0, since: -1 });
   const globe = useMemo(() => {
     const map = landMask();
     const material = new ShaderMaterial({
-      uniforms: { angle: { value: 0.6 }, land: { value: map }, previewMap: {value: null}, mode: {value: 0} },
+      uniforms: { angle: { value: 0.6 }, land: { value: map }, previewMap: {value: null}, pageMap: {value: null}, mode: {value: 0} },
       vertexShader: `varying vec2 coords;
         void main(){coords=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
       fragmentShader: `uniform sampler2D land;
-        uniform float angle, mode; uniform sampler2D previewMap;
+        uniform float angle, mode; uniform sampler2D previewMap, pageMap;
         varying vec2 coords;
         void main(){
+          if(mode > 2.5){gl_FragColor=texture2D(pageMap,coords);return;}
           if(mode > 1.5){gl_FragColor=texture2D(previewMap,coords);return;}
           vec2 p=(coords-.5)*2.18;
           float r=length(p);
@@ -183,28 +189,37 @@ export function CrtGlobe({
     };
   }, [screen, globe, invalidate]);
   useLayoutEffect(() => {
+    page.flipY = false;
+    page.colorSpace = SRGBColorSpace;
+    page.magFilter = page.minFilter = NearestFilter;
+    page.generateMipmaps = false;
+    page.needsUpdate = true;
+    globe.material.uniforms.pageMap.value = page;
     globe.material.uniforms.previewMap.value = preview;
     invalidate();
     return () => preview.dispose();
-  }, [globe, preview, invalidate]);
+  }, [globe, page, preview, invalidate]);
   useLayoutEffect(() => {
     if (!(screen instanceof Mesh)) return;
-    blink.current = { step: 0, since: -1 };
-    const previewNow = atTerminal && (reduced || globe.material.uniforms.mode.value === 2);
-    globe.material.uniforms.mode.value = previewNow ? 2 : atTerminal ? 1 : 0;
-    screen.scale.x = previewNow ? 1.7 : 1;
+    const mode = globe.material.uniforms.mode;
+    if (!atTerminal) mode.value = 0;
+    else if (entering || mode.value === 3) mode.value = 3;
+    else mode.value = reduced || mode.value === 2 ? 2 : 1;
+    blink.current = { step: mode.value === 2 ? 3 : 0, since: -1 };
+    screen.scale.x = mode.value >= 2 ? 1.7 : 1;
     invalidate();
-  }, [atTerminal, reduced, globe, screen, invalidate]);
+  }, [atTerminal, entering, reduced, globe, screen, invalidate]);
   // Advance at most one phase per rendered frame, even on a slow GPU.
   useFrame(({ clock }) => {
-    if (!atTerminal || reduced || !screen || globe.material.uniforms.mode.value === 2) return;
+    if (!atTerminal || !screen || globe.material.uniforms.mode.value === 3) return;
     const state = blink.current;
     const now = clock.elapsedTime;
     if (state.since < 0) state.since = now;
-    if (now - state.since >= (state.step === 1 ? .24 : .17)) {
+    const hold = state.step === 3 ? 1.35 : state.step === 1 ? .24 : .17;
+    if (now - state.since >= hold) {
       state.step++;
       state.since = now;
-      const mode = [1, 0, 1, 2][state.step];
+      const mode = [1, 0, 1, 2, 3][state.step];
       globe.material.uniforms.mode.value = mode;
       if (mode === 2) screen.scale.x = 1.7;
     }

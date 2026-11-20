@@ -24,6 +24,8 @@ export const destinations = ["terminal", "wing", "books"] as const;
 export type Destination = (typeof destinations)[number];
 export type Stop = Destination | "reception";
 type Props = {
+  entering: boolean;
+  onScreenFramed: () => void;
   atTerminal: boolean; language: import("./catalog").Language;
   stop: Stop;
   yaw: number;
@@ -47,6 +49,8 @@ function destination(object: Object3D | null): Destination | null {
   return null;
 }
 export default function LabScene({
+  entering,
+  onScreenFramed,
   stop,
   yaw,
   pitch,
@@ -66,6 +70,7 @@ export default function LabScene({
   const { camera, gl, invalidate, size } = useThree();
   const first = useRef(true);
   const lastArrival = useRef<Stop | null>(null);
+  const framedAt = useRef<number | null>(null);
   const fixtures = useMemo(() => {
     const lights: {
       name: string;
@@ -111,6 +116,22 @@ export default function LabScene({
   const pose = useMemo(() => {
     const target = new Object3D();
     model.getObjectByName("eye_" + stop)!.getWorldPosition(target.position);
+    if (entering) {
+      const screen = model.getObjectByName("CRT_globe_display") as Mesh;
+      screen.geometry.computeBoundingBox();
+      const bounds = screen.geometry.boundingBox!;
+      const center = screen.localToWorld(bounds.getCenter(new Vector3()));
+      const scale = screen.getWorldScale(new Vector3());
+      const extent = bounds.getSize(new Vector3()).multiply(scale);
+      const width = extent.x * 1.7 / screen.scale.x;
+      const aspect = size.width / size.height;
+      const fov = aspect < 1 ? 82 : 55;
+      const distance = 0.55 * Math.max(extent.y, width / aspect) / Math.tan(fov * Math.PI / 360);
+      const normal = screen.getWorldDirection(new Vector3());
+      target.position.copy(center).addScaledVector(normal, distance);
+      target.lookAt(center.clone().addScaledVector(normal, distance + 1));
+      return target;
+    }
     if (stop === "reception" && size.width < size.height)
       target.position.z += 0.38;
     const aim = model
@@ -122,7 +143,10 @@ export default function LabScene({
     rotation.x += pitch;
     target.rotation.copy(rotation);
     return target;
-  }, [model, stop, yaw, pitch, size.width, size.height]);
+  }, [model, entering, stop, yaw, pitch, size.width, size.height]);
+  useLayoutEffect(() => {
+    framedAt.current = null;
+  }, [pose]);
   useLayoutEffect(() => {
     lastArrival.current = null;
   }, [stop]);
@@ -153,13 +177,24 @@ export default function LabScene({
     gl.domElement.addEventListener("webglcontextlost", onLoss);
     return () => gl.domElement.removeEventListener("webglcontextlost", onLoss);
   }, [model, gl, onReady, onLoss]);
-  useFrame((_, dt) => {
+  useFrame(({ clock }, dt) => {
     const a =
       first.current || reduced ? 1 : 1 - Math.exp(-8 * Math.min(dt, 0.08));
     first.current = false;
     camera.position.lerp(pose.position, a);
     camera.quaternion.slerp(pose.quaternion, a);
     camera.updateMatrixWorld();
+    if (entering) {
+      if (camera.position.distanceToSquared(pose.position) < 0.0001 &&
+          camera.quaternion.angleTo(pose.quaternion) < 0.01) {
+        framedAt.current ??= clock.elapsedTime;
+        if (clock.elapsedTime - framedAt.current >= 0.18) {
+          framedAt.current = Infinity;
+          onScreenFramed();
+        }
+      }
+      invalidate();
+    }
     if (
       lastArrival.current !== stop &&
       camera.position.distanceToSquared(pose.position) < 0.0025 &&
@@ -173,6 +208,7 @@ export default function LabScene({
       if (!el) continue;
       projected.copy(position).project(camera);
       el.hidden =
+        entering ||
         projected.z < -1 ||
         projected.z > 1 ||
         Math.abs(projected.x) > 1.35 ||
@@ -236,7 +272,7 @@ export default function LabScene({
           if (d && e.delta < 5) onPick(d);
         }}
       />
-      <CrtGlobe model={model} reduced={reduced} atTerminal={atTerminal} language={language} />
+      <CrtGlobe model={model} reduced={reduced} atTerminal={atTerminal} language={language} entering={entering} />
       <PixelFinish model={model} active={active} />
     </>
   );
