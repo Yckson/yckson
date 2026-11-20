@@ -22,7 +22,7 @@ import { PixelFinish } from "./PixelFinish";
 
 export const destinations = ["terminal", "wing", "books"] as const;
 export type Destination = (typeof destinations)[number];
-export type Stop = Exclude<Destination, "books"> | "reception";
+export type Stop = Destination | "reception";
 type Props = {
   stop: Stop;
   yaw: number;
@@ -32,6 +32,7 @@ type Props = {
   signs: RefObject<Partial<Record<Destination, HTMLButtonElement | null>>>;
   onHover: (d: Destination | null) => void;
   onPick: (d: Destination) => void;
+  onArrive: (stop: Stop) => void;
   onReady: () => void;
   onLoss: () => void;
 };
@@ -53,6 +54,7 @@ export default function LabScene({
   signs,
   onHover,
   onPick,
+  onArrive,
   onReady,
   onLoss,
 }: Props) {
@@ -62,6 +64,7 @@ export default function LabScene({
   );
   const { camera, gl, invalidate, size } = useThree();
   const first = useRef(true);
+  const lastArrival = useRef<Stop | null>(null);
   const fixtures = useMemo(() => {
     const lights: {
       name: string;
@@ -120,6 +123,9 @@ export default function LabScene({
     return target;
   }, [model, stop, yaw, pitch, size.width, size.height]);
   useLayoutEffect(() => {
+    lastArrival.current = null;
+  }, [stop]);
+  useLayoutEffect(() => {
     if (camera instanceof PerspectiveCamera) {
       camera.fov = size.width < size.height ? 82 : 55;
       camera.updateProjectionMatrix();
@@ -153,6 +159,14 @@ export default function LabScene({
     camera.position.lerp(pose.position, a);
     camera.quaternion.slerp(pose.quaternion, a);
     camera.updateMatrixWorld();
+    if (
+      lastArrival.current !== stop &&
+      camera.position.distanceToSquared(pose.position) < 0.0025 &&
+      camera.quaternion.angleTo(pose.quaternion) < 0.05
+    ) {
+      lastArrival.current = stop;
+      onArrive(stop);
+    }
     for (const { id, position } of guidePoints) {
       const el = signs.current[id];
       if (!el) continue;

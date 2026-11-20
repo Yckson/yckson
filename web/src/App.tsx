@@ -186,7 +186,14 @@ function MuseumPage() {
           <article className="wing">
             <h1>{t.articles}</h1>
             <p>{t.emptyArticles}</p>
-            <Link className="secondary" to={root}>
+            <Link
+              className="secondary"
+              to={
+                new URLSearchParams(location.search).get("from") === "books"
+                  ? root + "/museum?stop=books"
+                  : root
+              }
+            >
               {t.back} ←
             </Link>
           </article>
