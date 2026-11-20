@@ -16,6 +16,7 @@ import {
   type Language,
 } from "./catalog";
 import { TourBoundary } from "./TourBoundary";
+import { AcademicPortfolio } from "./AcademicPortfolio";
 import { Accessibility, useDisplayPreferences } from "./Accessibility";
 import "./style.css";
 import "./lab.css";
@@ -199,17 +200,7 @@ function MuseumPage() {
           </article>
         )}
         {portfolio && (
-          <article className="wing">
-            <p className="room">
-              <i />
-              {t.wing}
-            </p>
-            <h1>{portfolio.title[language]}</h1>
-            <p>{portfolio.intro[language]}</p>
-            <Link className="secondary" to={returnUrl}>
-              {t.back} ←
-            </Link>
-          </article>
+          <AcademicPortfolio language={language} returnUrl={returnUrl} />
         )}
       </main>
     </div>

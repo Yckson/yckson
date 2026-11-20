@@ -1,0 +1,49 @@
+.academic {
+  margin: 0 auto;
+  max-width: 1450px;
+  padding: clamp(24px, 4vw, 64px) var(--gutter) 5rem;
+  color: var(--ink);
+}
+.academic-cover {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(24px, 6vw, 90px);
+  align-items: center;
+  border-top: 1px solid var(--ink);
+  padding: clamp(24px, 4vw, 60px) 0;
+}
+.academic-cover img { width: 100%; height: auto; display: block; }
+.academic-meta { font: 600 .79rem/1.6 ui-monospace, monospace; letter-spacing: .035em; }
+.academic-cover h1 { font-size: clamp(3rem, 6.6vw, 6.5rem); line-height: .98; letter-spacing: -.065em; margin: .35em 0; }
+.academic-cover h2 { font-size: clamp(1.1rem, 2vw, 1.65rem); letter-spacing: -.025em; }
+.academic-cover p:last-child, .academic-entry p { max-width: 66ch; font-size: 1.05rem; line-height: 1.65; margin: 0; }
+.academic-nav { display: flex; flex-wrap: wrap; gap: .5rem; padding: 1rem 0; border-block: 1px solid var(--edge); }
+.academic-nav a { padding: .65rem 1rem; border-radius: 2px; }
+.academic-nav a[aria-current] { background: var(--accent); color: var(--ink); }
+.academic-nav a:hover { text-decoration: underline; }
+.academic-section { margin: 3rem 0; }
+.academic-section h2 { font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -.055em; margin: 0 0 1rem; }
+.academic-entry { display: grid; grid-template-columns: minmax(10rem, 1fr) 3fr; gap: 1.5rem; padding: 1.7rem 0; border-top: 1px solid var(--edge); }
+.academic-entry h3 { font-size: clamp(1.25rem, 2.3vw, 2rem); line-height: 1.15; letter-spacing: -.035em; margin: 0 0 .65rem; }
+@media (max-width: 680px) {
+  .academic-cover { display: flex; flex-direction: column-reverse; align-items: stretch; gap: 12px; }
+  .academic-cover img { height: clamp(180px, 62vw, 320px); object-fit: cover; object-position: center 32%; }
+  .academic-entry { grid-template-columns: 1fr; gap: .45rem; }
+  .academic-nav { gap: .25rem; }
+  .academic-nav a { padding: .65rem .55rem; }
+}
+.academic-source {
+  display: inline-block;
+  margin-top: .65rem;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.academic-profiles { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.academic-profiles a {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: .65rem;
+  font-weight: 600;
+}
+.academic-profiles a:hover, .academic-profiles a:focus-visible { text-decoration: underline; }
