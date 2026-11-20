@@ -17,7 +17,8 @@ import {
 } from "./catalog";
 import { TourBoundary } from "./TourBoundary";
 import { AcademicPortfolio } from "./AcademicPortfolio";
-import { Accessibility, useDisplayPreferences } from "./Accessibility";
+import { useDisplayPreferences } from "./Accessibility";
+import { LabLoading } from "./LabLoading";
 import "./style.css";
 import "./lab.css";
 
@@ -96,10 +97,10 @@ function MuseumPage() {
         {t.skip}
       </a>
       <header>
-        <Link className="brand" to={root}>
+        {!touring && <Link className="brand" to={root}>
           <i aria-hidden="true" className="mark" />
           {t.name}
-        </Link>
+        </Link>}
         <div className="utility">
           {touring && (
             <Link className="index-shortcut" to={root + "/portfolios"}>
@@ -123,20 +124,13 @@ function MuseumPage() {
               </Link>
             ))}
           </nav>
-          <Accessibility language={language} prefs={prefs} />
         </div>
       </header>
       <main ref={content} tabIndex={-1} id="main">
         {touring && (
           <TourBoundary onLoss={onLoss}>
             <Suspense
-              fallback={
-                <p role="status">
-                  {language === "pt"
-                    ? "Carregando o laboratório…"
-                    : "Loading the lab…"}
-                </p>
-              }
+              fallback={<LabLoading language={language} />}
             >
               <Tour
                 language={language}

@@ -7,6 +7,7 @@ import LabScene, {
   type Stop,
 } from "./LabScene";
 import { computerScience, type Language } from "./catalog";
+import { LabLoading } from "./LabLoading";
 
 const copy = {
   en: {
@@ -240,11 +241,7 @@ export default function Tour({
             </span>
           </button>
         ))}
-        {!ready && (
-          <span className="loading" role="status">
-            {t.loading}
-          </span>
-        )}
+        {!ready && <LabLoading language={language} />}
       </div>
     </section>
   );
