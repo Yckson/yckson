@@ -1,6 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import {
-  HashRouter,
   Link,
   Navigate,
   Route,
@@ -19,6 +18,7 @@ import { TourBoundary } from "./TourBoundary";
 import { AcademicPortfolio } from "./AcademicPortfolio";
 import { useDisplayPreferences } from "./Accessibility";
 import { LabLoading } from "./LabLoading";
+import { metadata, updateHead } from "./seo";
 import "./style.css";
 import "./lab.css";
 
@@ -73,9 +73,8 @@ function MuseumPage() {
       : root;
   useEffect(() => {
     document.documentElement.lang = language === "pt" ? "pt-BR" : "en";
-    document.title =
-      (portfolio?.title[language] ??
-        (index ? t.index : articles ? t.articles : t.title)) + " · Yckson";
+    const origin = document.documentElement.dataset.origin || window.location.origin;
+    updateHead(metadata(location.pathname, origin));
     content.current?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
   }, [location.pathname, language, portfolio, index, articles, t]);
@@ -127,7 +126,12 @@ function MuseumPage() {
         </div>
       </header>
       <main ref={content} tabIndex={-1} id="main">
-        {touring && (
+        {touring && import.meta.env.SSR && <section>
+          <h1>{t.name}</h1>
+          <p>{metadata(root, "").description}</p>
+          <Link to={root + "/portfolio/computer-science"}>{portfolios[0].title[language]}</Link>
+        </section>}
+        {touring && !import.meta.env.SSR && (
           <TourBoundary onLoss={onLoss}>
             <Suspense
               fallback={<LabLoading language={language} />}
@@ -202,7 +206,6 @@ function MuseumPage() {
 }
 export default function App() {
   return (
-    <HashRouter>
       <Routes>
         {[
           "/:lang",
@@ -218,6 +221,5 @@ export default function App() {
           element={<Navigate replace to={"/" + initialLanguage()} />}
         />
       </Routes>
-    </HashRouter>
   );
 }

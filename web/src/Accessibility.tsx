@@ -3,7 +3,7 @@ import { readPreference, remember, type Language } from './catalog'
 
 function useDisplayPreference(key: string, query: string) {
   const [choice, setChoice] = useState(() => readPreference(key))
-  const [system, setSystem] = useState(() => matchMedia(query).matches)
+  const [system, setSystem] = useState(() => typeof matchMedia === 'function' && matchMedia(query).matches)
   useEffect(() => {
     const media = matchMedia(query)
     const change = () => setSystem(media.matches)

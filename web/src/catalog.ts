@@ -19,5 +19,5 @@ export function remember(key: string, value: string) {
 export function initialLanguage(): Language {
   const saved = readPreference('language')
   if (saved === 'pt' || saved === 'en') return saved
-  return /^pt(?:-|$)/i.test(navigator.language) ? 'pt' : 'en'
+  return typeof navigator !== 'undefined' && /^pt(?:-|$)/i.test(navigator.language) ? 'pt' : 'en'
 }
