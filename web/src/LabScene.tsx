@@ -24,6 +24,7 @@ export const destinations = ["terminal", "wing", "books"] as const;
 export type Destination = (typeof destinations)[number];
 export type Stop = Destination | "reception";
 type Props = {
+  atTerminal: boolean; language: import("./catalog").Language;
   stop: Stop;
   yaw: number;
   pitch: number;
@@ -51,7 +52,7 @@ export default function LabScene({
   pitch,
   reduced,
   active,
-  signs,
+  atTerminal, language, signs,
   onHover,
   onPick,
   onArrive,
@@ -235,7 +236,7 @@ export default function LabScene({
           if (d && e.delta < 5) onPick(d);
         }}
       />
-      <CrtGlobe model={model} reduced={reduced} />
+      <CrtGlobe model={model} reduced={reduced} atTerminal={atTerminal} language={language} />
       <PixelFinish model={model} active={active} />
     </>
   );

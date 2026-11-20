@@ -1,5 +1,5 @@
-import { useLayoutEffect, useMemo } from "react";
-import { useThree } from "@react-three/fiber";
+import { useLayoutEffect, useMemo, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import {
   CanvasTexture,
   Frustum,
@@ -9,6 +9,9 @@ import {
   Object3D,
   ShaderMaterial,
 } from "three";
+
+import { portfolioScreen } from "./portfolioScreen";
+import type { Language } from "./catalog";
 
 // A tiny phosphor map gives the rotating wireframe a recognizable east and west.
 function landMask() {
@@ -122,22 +125,26 @@ function landMask() {
 export function CrtGlobe({
   model,
   reduced,
+  atTerminal, language,
 }: {
   model: Object3D;
-  reduced: boolean;
+  reduced: boolean; atTerminal: boolean; language: Language;
 }) {
   const { camera, invalidate } = useThree();
   const screen = model.getObjectByName("CRT_globe_display");
+  const preview = useMemo(() => portfolioScreen(language), [language]);
+  const blink = useRef({ step: 0, since: -1 });
   const globe = useMemo(() => {
     const map = landMask();
     const material = new ShaderMaterial({
-      uniforms: { angle: { value: 0.6 }, land: { value: map } },
+      uniforms: { angle: { value: 0.6 }, land: { value: map }, previewMap: {value: null}, mode: {value: 0} },
       vertexShader: `varying vec2 coords;
         void main(){coords=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
       fragmentShader: `uniform sampler2D land;
-        uniform float angle;
+        uniform float angle, mode; uniform sampler2D previewMap;
         varying vec2 coords;
         void main(){
+          if(mode > 1.5){gl_FragColor=texture2D(previewMap,coords);return;}
           vec2 p=(coords-.5)*2.18;
           float r=length(p);
           if(r>1.)discard;
@@ -151,7 +158,8 @@ export function CrtGlobe({
           float wire=1.-smoothstep(.27,1.05,min(distanceToLine.x,distanceToLine.y));
           float rim=smoothstep(1.-max(fwidth(r)*1.3,.012),1.,r);
           vec3 green=mix(vec3(.005,.034,.018),vec3(.022,.20,.068),terrain);
-          gl_FragColor=vec4(mix(green,vec3(.37,1.48,.58),max(wire*.88,rim)),1.);
+          vec3 phosphor=mix(green,vec3(.37,1.48,.58),max(wire*.88,rim));
+          gl_FragColor=vec4(phosphor*(mode>.5?.12:1.),1.);
         }`,
     });
     return { map, material };
@@ -168,13 +176,42 @@ export function CrtGlobe({
     invalidate();
     return () => {
       screen.material = original;
+      screen.scale.x = 1;
       for (const line of lines) line.visible = true;
       globe.map.dispose();
       globe.material.dispose();
     };
   }, [screen, globe, invalidate]);
   useLayoutEffect(() => {
-    if (reduced || !(screen instanceof Mesh)) return;
+    globe.material.uniforms.previewMap.value = preview;
+    invalidate();
+    return () => preview.dispose();
+  }, [globe, preview, invalidate]);
+  useLayoutEffect(() => {
+    if (!(screen instanceof Mesh)) return;
+    blink.current = { step: 0, since: -1 };
+    const previewNow = atTerminal && (reduced || globe.material.uniforms.mode.value === 2);
+    globe.material.uniforms.mode.value = previewNow ? 2 : atTerminal ? 1 : 0;
+    screen.scale.x = previewNow ? 1.7 : 1;
+    invalidate();
+  }, [atTerminal, reduced, globe, screen, invalidate]);
+  // Advance at most one phase per rendered frame, even on a slow GPU.
+  useFrame(({ clock }) => {
+    if (!atTerminal || reduced || !screen || globe.material.uniforms.mode.value === 2) return;
+    const state = blink.current;
+    const now = clock.elapsedTime;
+    if (state.since < 0) state.since = now;
+    if (now - state.since >= (state.step === 1 ? .24 : .17)) {
+      state.step++;
+      state.since = now;
+      const mode = [1, 0, 1, 2][state.step];
+      globe.material.uniforms.mode.value = mode;
+      if (mode === 2) screen.scale.x = 1.7;
+    }
+    invalidate();
+  });
+  useLayoutEffect(() => {
+    if (atTerminal || reduced || !(screen instanceof Mesh)) return;
     const frustum = new Frustum();
     const matrix = new Matrix4();
     let previous = performance.now();
@@ -195,6 +232,6 @@ export function CrtGlobe({
       invalidate();
     }, 1000 / 12);
     return () => window.clearInterval(timer);
-  }, [camera, screen, globe, invalidate, reduced]);
+  }, [camera, screen, globe, invalidate, reduced, atTerminal]);
   return null;
 }

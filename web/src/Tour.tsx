@@ -184,6 +184,7 @@ export default function Tour({
           <color attach="background" args={["#10251b"]} />
           <Suspense fallback={null}>
             <LabScene
+              atTerminal={stop === "terminal" && arrived === "terminal"} language={language}
               stop={stop}
               {...look}
               reduced={reduced}
