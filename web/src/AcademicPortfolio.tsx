@@ -125,9 +125,13 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         {entry("Laravel · PHP · MySQL", t("Evasão escolar", "School dropout analysis"), t("Desenvolvi uma aplicação web para ajudar a identificar possíveis casos de evasão no ensino médio.", "I developed a web application to help identify potential cases of students dropping out of secondary school."))}
       </>}
       {section === "experience" && <>
-        {isMicro && renderEntry("Verilog · FPGA · RV32I", t("Projeto de circuitos digitais", "Digital circuit design"), t(
-          "Projetei um processador MIPS de ciclo único e um controlador de LCD para a Altera DE2. Nos estudos de RISC-V, trabalhei com o caminho de dados RV32I.",
-          "I designed a single-cycle MIPS processor and an LCD controller for the Altera DE2. In my RISC-V studies, I worked on the RV32I datapath."
+        {isMicro && renderEntry("RV32I", t("Caminho de dados RISC-V", "RISC-V datapath"), t(
+          "Nos meus estudos de arquitetura de computadores, trabalhei com o caminho de dados do processador para o conjunto de instruções RV32I.",
+          "In my computer architecture studies, I worked on the processor datapath for the RV32I instruction set."
+        ), "https://github.com/Yckson/RISC-V-RV32I")}
+        {isMicro && renderEntry("Verilog · FPGA", t("Projeto de circuitos digitais", "Digital circuit design"), t(
+          "Projetei um processador MIPS de ciclo único e um controlador de LCD para a Altera DE2.",
+          "I designed a single-cycle MIPS processor and an LCD controller for the Altera DE2."
         ))}
         {embeddedEntry("Linux · C · C++", t("Drivers e programação em nível de kernel", "Device drivers and kernel programming"), t(
           "Na disciplina de Interface Hardware/Software (IHS), desenvolvi drivers para Linux e programei em nível de kernel. Na CoreTECH, também coordenei estudantes no teste de módulos de hardware e no desenvolvimento de drivers e aplicações de exemplo.",
