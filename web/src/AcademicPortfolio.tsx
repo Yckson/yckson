@@ -215,7 +215,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         {entry("IFBA · Seabra", t("Técnico em Informática", "Technical education in IT"), t("Antes de entrar na UFS, fiz o curso técnico integrado em Informática no Instituto Federal da Bahia. Complementei a formação com cursos de front-end, banco de dados e web design em 2023.", "Before entering UFS, I studied IT in an integrated technical program at the Federal Institute of Bahia. In 2023 I also took courses in frontend development, databases and web design."))}
       </>}
       {section === "recommendations" && <>
-        {entry(t("Orientador de iniciação científica", "Undergraduate research supervisor"), "Bruno Otávio Piedade Prado", t(
+        {renderEntry(t("Orientador de iniciação científica", "Undergraduate research supervisor"), "Bruno Otávio Piedade Prado", t(
           "Ao orientar William na iniciação científica, Bruno destacou a iniciativa e a organização com que ele conduzia as tarefas da pesquisa. Como professor, também ressaltou seu domínio da geração de código de máquina em tempo de execução.",
           "As William’s research supervisor, Bruno highlighted the initiative and organization William brought to his research tasks. As his professor, he also singled out William’s command of runtime machine-code generation."
         ))}
@@ -227,7 +227,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "Calebe destacou a capacidade de William de envolver colegas em projetos práticos de hardware. Como exemplo, descreveu seu trabalho na CoreTECH, onde William coordenou estudantes em testes de módulos antes do lançamento e no desenvolvimento de drivers e aplicações de exemplo.",
           "Calebe highlighted William’s ability to bring fellow students into hands-on hardware projects. He described William’s work at CoreTECH coordinating students as they tested pre-release modules and developed drivers and example applications."
         ))}
-        {digitalEntry(t("Certificação · Cadence", "Certification · Cadence"), "Cadence Mentorship Program for University Students", t(
+        {renderEntry(t("Certificação · Cadence", "Certification · Cadence"), "Cadence Mentorship Program for University Students", t(
           "Concluí o programa de mentoria da Cadence, com apresentações sobre a indústria de microeletrônica e encontros sobre caminhos de carreira.",
           "I completed Cadence’s mentorship program, attending microelectronics industry presentations and mentoring sessions on career paths."
         ), "https://www.credly.com/badges/e204ee28-3c11-4432-908e-bb12983d3fc5", t("Ver credencial no Credly", "View credential on Credly"))}
