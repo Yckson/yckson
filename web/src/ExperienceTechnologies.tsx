@@ -1,25 +1,23 @@
 import type { Language, portfolios } from "./catalog";
 
-type Technology = readonly [name: string, icon: string];
+type Technology = readonly [name: string, icon: string, portugueseName?: string];
 
 const debugging: Technology[] = [
   ["Linux", "linux"], ["C", "c"], ["C++", "cplusplus"], ["GDB", "gdb"],
   ["GEF", "bug"], ["gprof", "chart-no-axes-column"], ["Valgrind", "memory-stick"],
 ];
 const digitalDesign: Technology[] = [
-  ["RISC-V · RV32I", "riscv"], ["MIPS", "cpu"], ["Verilog", "verilog"],
-  ["FPGA", "microchip"], ["Altera DE2", "circuit-board"], ["LCD", "monitor"],
+  ["RISC-V", "riscv"], ["MIPS", "cpu"], ["Verilog", "verilog"], ["FPGA", "microchip"],
 ];
 const technologies = {
-  "embedded-systems": debugging,
+  "embedded-systems": [...debugging, ["Arduino", "arduino"], ["ESP32", "microchip"]],
   "microelectronics-and-semiconductors": digitalDesign,
   "computer-science": [
     ...debugging, ...digitalDesign,
     ["Assembly", "assembly-generic"], ["x86 / x86-64", "assembly-intel"],
-    ["PicoQuickProcessor", "cpu"], ["JIT", "binary"], ["Ghidra", "ghidra"],
-    ["Arduino", "arduino"], ["ODROID", "circuit-board"], ["FFmpeg", "ffmpeg"],
-    ["Python", "python"], ["Diffie–Hellman", "key-round"], ["Tree-sitter", "list-tree"],
-    ["Streamlit", "streamlit"], ["React Native", "reactnative"], ["Expo · expo.dev", "expo"],
+    ["Ghidra", "ghidra"], ["Arduino", "arduino"], ["FFmpeg", "ffmpeg"],
+    ["Python", "python"], ["Cryptography", "key-round", "Criptografia"], ["Tree-sitter", "list-tree"],
+    ["Streamlit", "streamlit"], ["React Native", "reactnative"], ["Expo", "expo"],
     ["JavaScript", "javascript"], ["PHP", "php"], ["SQL", "database"], ["React", "react"],
     ["NestJS", "nestjs"], ["PostgreSQL", "postgresql"], ["Docker Compose", "docker"],
     ["Laravel", "laravel"], ["MySQL", "mysql"], ["Git", "git"], ["GitHub", "github"],
@@ -33,11 +31,11 @@ export function ExperienceTechnologies({ slug, language }: {
   language: Language;
 }) {
   return <ul className="experience-technologies" aria-label={language === "pt" ? "Tecnologias" : "Technologies"}>
-    {technologies[slug].map(([name, icon]) => <li key={name}>
+    {technologies[slug].map(([name, icon, portugueseName]) => <li key={name}>
       <svg aria-hidden="true" width="23" height="23">
         <use href={import.meta.env.BASE_URL + "academic/technology/icons.svg#" + icon} />
       </svg>
-      {name}
+      {language === "pt" ? portugueseName ?? name : name}
     </li>)}
   </ul>;
 }
