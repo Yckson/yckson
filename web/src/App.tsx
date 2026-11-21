@@ -198,17 +198,7 @@ function MuseumPage() {
             </Link>
           </article>
         )}
-        {portfolio === computerScience && (
-          <AcademicPortfolio language={language} returnUrl={returnUrl} />
-        )}
-        {portfolio && "project" in portfolio && (
-          <article className="wing">
-            <h1>{portfolio.title[language]}</h1>
-            <p>{portfolio.intro[language]}</p>
-            <p><a href={portfolio.url}>{portfolio.project} ↗</a></p>
-            <Link className="secondary" to={returnUrl}>← {t.back}</Link>
-          </article>
-        )}
+        {portfolio && <AcademicPortfolio portfolio={portfolio} language={language} returnUrl={returnUrl} />}
       </main>
     </div>
   );
