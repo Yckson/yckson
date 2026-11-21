@@ -196,11 +196,11 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "Minha equipe conquistou o primeiro lugar entre as equipes do Nordeste no Cadathlon, em Gramado.",
           "At the Cadathlon in Gramado, my team placed first among teams from Northeast Brazil."
         ))}
-        {otherEntry("2025 · Lagarto, Sergipe", t("1º lugar na PROGBASE", "First place at PROGBASE"), t(
+        {renderEntry("2025 · Lagarto, Sergipe", t("1º lugar na PROGBASE", "First place at PROGBASE"), t(
           "Minha equipe venceu a maratona de programação da Escola Regional de Computação Bahia, Alagoas e Sergipe (ERBASE).",
           "My team won the programming contest at the Regional School of Computing for Bahia, Alagoas and Sergipe (ERBASE)."
         ))}
-        {otherEntry("2025 · São Paulo", t("Finalista da Maratona de Programação da SBC", "Brazilian Programming Marathon national finalist"), t(
+        {renderEntry("2025 · São Paulo", t("Finalista da Maratona de Programação da SBC", "Brazilian Programming Marathon national finalist"), t(
           "Minha equipe disputou a final nacional da Maratona de Programação da Sociedade Brasileira de Computação (SBC) no bairro da Liberdade, em São Paulo.",
           "My team competed in the national finals of the Brazilian Computer Society (SBC) Programming Marathon in São Paulo’s Liberdade neighborhood."
         ))}
@@ -228,6 +228,28 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         {digitalEntry("2025", t("Circuitos e sistemas em Sergipe", "Circuits and systems in Sergipe"), t("Sou membro fundador do capítulo estudantil da Circuits and Systems Society (CASS) do Institute of Electrical and Electronics Engineers (IEEE) na UFS. Participei da organização do primeiro IEEE CASS Sergipe Workshop, que reuniu pesquisadores e profissionais da indústria.", "I am a founding member of the UFS student chapter of the Circuits and Systems Society (CASS), part of the Institute of Electrical and Electronics Engineers (IEEE). I helped organize the first IEEE CASS Sergipe Workshop, bringing together researchers and industry professionals."))}
       </>}
       {section === "studies" && <>
+        {isWeb && <>
+          {renderEntry(t("UFS · 2023–atual", "UFS · 2023–present"), t("Graduação em Ciência da Computação", "Undergraduate degree in Computer Science"), t(
+            "Curso Ciência da Computação na Universidade Federal de Sergipe (UFS), onde ingressei em 2023. Na graduação, trabalhei tanto na interface de aplicações quanto nas APIs e nos bancos de dados que as sustentam.",
+            "I’m studying Computer Science at the Federal University of Sergipe (UFS). I started in 2023 and have worked on application interfaces as well as the APIs and databases behind them."
+          ))}
+          {renderEntry("UFS · 2023–2024", t("Fundamentos de programação", "Programming foundations"), t(
+            "Cursei Programação Funcional, Programação Imperativa, Lógica para Computação, Estruturas de Dados, Programação Orientada a Objetos e Projeto e Análise de Algoritmos.",
+            "My coursework included Functional Programming, Imperative Programming, Logic for Computing, Data Structures, Object-Oriented Programming, and Algorithm Design and Analysis."
+          ))}
+          {renderEntry("UFS · 2025", t("Engenharia de software e backend", "Software engineering and backend development"), t(
+            "Cursei Engenharia de Software I e II, Banco de Dados I, Redes, Sistemas Operacionais, Sistemas Distribuídos e Programação Paralela e Concorrente. Em Engenharia de Software II, participei do desenvolvimento do EndoCare com React, NestJS e PostgreSQL.",
+            "I studied Software Engineering I and II, Databases I, Networks, Operating Systems, Distributed Systems, and Parallel and Concurrent Programming. In Software Engineering II, I helped build EndoCare with React, NestJS and PostgreSQL."
+          ))}
+          {renderEntry("UFS · 2026", t("Interfaces e desenvolvimento móvel", "Interfaces and mobile development"), t(
+            "Em 2026.2, curso Interface Humano-Computador, Computação Gráfica e Prática Orientada em Computação II. Na prática orientada, desenvolvo em React Native e Expo o aplicativo que acompanha um dispositivo vestível.",
+            "In the second semester of 2026, I’m taking Human–Computer Interaction, Computer Graphics, and Supervised Computing Practice II. For my supervised project, I’m developing a wearable companion app with React Native and Expo."
+          ))}
+          {renderEntry("Danki Code", t("Desenvolvimento web", "Web development"), t(
+            "Concluí todos os cursos de desenvolvimento web oferecidos pela Danki Code na época da minha formação.",
+            "I completed all the web development courses Danki Code offered at the time."
+          ))}
+        </>}
         {(isMicro || isEmbedded) && renderEntry("UFS · 2024.1", t("Sistemas digitais", "Digital systems"), t("Cursei Fundamentos e Prática de Sistemas Digitais.", "I studied digital systems theory and completed the accompanying lab."))}
         {(isMicro || isEmbedded) && renderEntry("UFS · 2024.2", t("Arquitetura de Computadores", "Computer Architecture"), isEmbedded
           ? t("Cursei Arquitetura de Computadores e Sistemas Embarcados.", "I took Computer Architecture and Embedded Systems.")
@@ -237,20 +259,19 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         {webEntry("IFBA · Seabra", t("Técnico em Informática", "Technical education in IT"), t("Antes de entrar na UFS, fiz o curso técnico integrado em Informática no Instituto Federal da Bahia. Complementei a formação com cursos de front-end, banco de dados e web design em 2023.", "Before entering UFS, I studied IT in an integrated technical program at the Federal Institute of Bahia. In 2023 I also took courses in frontend development, databases and web design."))}
       </>}
       {section === "recommendations" && <>
-        {isWeb && <p>{t("Ainda não há recomendações ou certificações publicadas para Web e Mobile.", "There are no published Web & Mobile recommendations or certifications yet.")}</p>}
-        {otherEntry(t("Orientador de iniciação científica", "Undergraduate research supervisor"), "Bruno Otávio Piedade Prado", t(
+        {renderEntry(t("Orientador de iniciação científica", "Undergraduate research supervisor"), "Bruno Otávio Piedade Prado", t(
           "Ao orientar William na iniciação científica, Bruno destacou a iniciativa e a organização com que ele conduzia as tarefas da pesquisa. Como professor, também ressaltou seu domínio da geração de código de máquina em tempo de execução.",
           "As William’s research supervisor, Bruno highlighted the initiative and organization William brought to his research tasks. As his professor, he also singled out William’s command of runtime machine-code generation."
         ))}
-        {otherEntry(t("Professor de Seminários em Computação", "Computing seminars instructor"), "Rogério Patrício Chagas do Nascimento", t(
+        {renderEntry(t("Professor de Seminários em Computação", "Computing seminars instructor"), "Rogério Patrício Chagas do Nascimento", t(
           "Rogério situou William entre os 10% de estudantes mais dedicados e promissores que conheceu em 18 anos de docência. Destacou seu papel na criação da liga de hardware e robótica e nas parcerias com a Toradex e a Espressif, que abriram oportunidades para outros estudantes.",
           "Rogério counted William among the top 10% of students he had taught in 18 years for dedication and promise. He highlighted William’s role in founding the hardware and robotics league and building partnerships with Toradex and Espressif that opened opportunities for other students."
         ))}
-        {otherEntry(t("Professor de Arquitetura de Computadores", "Computer architecture instructor"), "Calebe Conceição", t(
+        {renderEntry(t("Professor de Arquitetura de Computadores", "Computer architecture instructor"), "Calebe Conceição", t(
           "Calebe destacou a capacidade de William de envolver colegas em projetos práticos de hardware. Como exemplo, descreveu seu trabalho na CoreTECH, onde William coordenou estudantes em testes de módulos antes do lançamento e no desenvolvimento de drivers e aplicações de exemplo.",
           "Calebe highlighted William’s ability to bring fellow students into hands-on hardware projects. He described William’s work at CoreTECH coordinating students as they tested pre-release modules and developed drivers and example applications."
         ))}
-        {otherEntry(t("Certificação · Cadence", "Certification · Cadence"), "Cadence Mentorship Program for University Students", t(
+        {renderEntry(t("Certificação · Cadence", "Certification · Cadence"), "Cadence Mentorship Program for University Students", t(
           "Concluí o programa de mentoria da Cadence, com apresentações sobre a indústria de microeletrônica e encontros sobre caminhos de carreira.",
           "I completed Cadence’s mentorship program, attending microelectronics industry presentations and mentoring sessions on career paths."
         ), "https://www.credly.com/badges/e204ee28-3c11-4432-908e-bb12983d3fc5", t("Ver credencial no Credly", "View credential on Credly"))}
