@@ -6,13 +6,14 @@ import LabScene, {
   type Destination,
   type Stop,
 } from "./LabScene";
-import { boards, isBoard, computerScience, type Language } from "./catalog";
+import { boards, isBoard, computerScience, webMobile, type Language } from "./catalog";
 import { LabLoading } from "./LabLoading";
 
 const copy = {
   en: {
     name: "Portfolio Hub",
     terminal: computerScience.title.en,
+    phone: webMobile.title.en,
     wing: "Exit",
     books: "Articles",
     browse: "Open articles",
@@ -26,6 +27,7 @@ const copy = {
   pt: {
     name: "Hub de Portfólios",
     terminal: computerScience.title.pt,
+    phone: webMobile.title.pt,
     wing: "Saída",
     books: "Artigos",
     browse: "Abrir artigos",
@@ -112,7 +114,7 @@ export default function Tour({
     <section className="lab" data-interacting={busy} aria-label={t.name}>
       <h1 className="sr-only">{t.name}</h1>
       <p id="lab-help" className="sr-only">
-        {t.hint} 4: Arduino. 5: ESP32. 6: FPGA.
+        {t.hint} 4: Arduino. 5: ESP32. 6: FPGA. 7: {t.phone}.
       </p>
       <div
         ref={viewport}
@@ -124,7 +126,7 @@ export default function Tour({
         data-target={hover ?? ""}
         onKeyDown={(e) => {
           if (e.altKey || e.ctrlKey || e.metaKey) return;
-          if (/^[1-6]$/.test(e.key)) {
+          if (/^[1-7]$/.test(e.key)) {
             if (!e.repeat) pick(destinations[Number(e.key) - 1]);
             e.preventDefault();
             return;
@@ -186,8 +188,9 @@ export default function Tour({
           <color attach="background" args={["#10251b"]} />
           <Suspense fallback={null}>
             <LabScene
-              entering={entering && stop === "terminal"}
-              onScreenFramed={() => navigate("/" + language + "/portfolio/" + computerScience.slug + "?from=terminal")}
+              entering={entering && (stop === "phone" || stop === "terminal")}
+              atPhone={stop === "phone" && arrived === "phone"}
+              onScreenFramed={() => navigate("/" + language + "/portfolio/" + (stop === "phone" ? webMobile.slug : computerScience.slug) + "?from=" + stop)}
               atTerminal={stop === "terminal" && arrived === "terminal"} language={language}
               stop={stop}
               {...look}
