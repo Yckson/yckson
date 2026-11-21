@@ -1,6 +1,8 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { computerScience, embedded, microelectronics, portfolios, type Language } from "./catalog";
 import "./academic.css";
+import { ExperienceTechnologies } from "./ExperienceTechnologies";
+import { ifbaResearch } from "./publications";
 
 const sectionNames = {
   research: ["Pesquisa", "Research"],
@@ -84,6 +86,10 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
     <section className="academic-section">
       <h2>{sectionNames[section][pt ? 0 : 1]}</h2>
       {section === "research" && <>
+        {cs && ifbaResearch.map(paper => renderEntry(
+          paper.venue + " · " + paper.kind[language], paper.title[language],
+          paper.summary[language], paper.url, t("Ler publicação", "Read publication")
+        ))}
         {entry("PIBIC · 2025/2026", t("Determinação de Plágio em Código-fonte", "Detecting Plagiarism in Source Code"), t("Na iniciação científica, sob orientação de Bruno Otávio Piedade Prado, investiguei se ainda é possível reconhecer a origem comum de dois programas em C ou C++ depois que a forma do código muda. Usamos o MAU para preparar pares de programas do Code4Bench, verificamos seu comportamento e extraímos blocos sintáticos com Tree-sitter.", "In my undergraduate research supervised by Bruno Otávio Piedade Prado, I studied whether two C or C++ programs could still be traced to a common source after changes to their code. We used MAU to prepare pairs from Code4Bench, checked their behavior and extracted syntax blocks with Tree-sitter."))}
         {renderEntry(t("Publicado na ERBASE 2025 · DCOMP", "Published at ERBASE 2025 · DCOMP"), t("Explorando Pensamento Computacional com Minecraft e Arduino para Iniciação à Programação e Microeletrônica", "Exploring Computational Thinking with Minecraft and Arduino to Introduce Programming and Microelectronics"), t("Na Escola Regional de Computação Bahia, Alagoas e Sergipe (ERBASE), publiquei este artigo com Davi Araújo do Nascimento. Construímos três protótipos para explorar o ensino de programação e microeletrônica. Um botão físico acionava uma plantação no Minecraft, uma intrusão no jogo disparava um alarme e um LED indicava a atividade de uma fornalha virtual. Verificamos a troca de sinais nos três protótipos. A avaliação com estudantes ficou para uma etapa futura.", "Davi Araújo do Nascimento and I published this paper at the Regional School of Computing for Bahia, Alagoas and Sergipe (ERBASE). We built three prototypes for teaching programming and microelectronics. A physical button triggered a Minecraft farm, an intrusion in the game set off an alarm, and an LED indicated when a virtual furnace was active. We verified signal exchange in all three prototypes. Evaluation with students remains an open question."))}
         {digitalEntry(
@@ -125,6 +131,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         {entry("Laravel · PHP · MySQL", t("Evasão escolar", "School dropout analysis"), t("Desenvolvi uma aplicação web para ajudar a identificar possíveis casos de evasão no ensino médio.", "I developed a web application to help identify potential cases of students dropping out of secondary school."))}
       </>}
       {section === "experience" && <>
+        <ExperienceTechnologies slug={portfolio.slug} language={language} />
         {isMicro && renderEntry("RV32I", t("Caminho de dados RISC-V", "RISC-V datapath"), t(
           "Nos meus estudos de arquitetura de computadores, trabalhei com o caminho de dados do processador para o conjunto de instruções RV32I.",
           "In my computer architecture studies, I worked on the processor datapath for the RV32I instruction set."
