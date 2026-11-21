@@ -10,6 +10,7 @@ import {
   MeshStandardMaterial,
   Euler,
   Mesh,
+  Group,
   Object3D,
   PerspectiveCamera,
   NearestFilter,
@@ -20,7 +21,9 @@ import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUnifo
 import { CrtGlobe } from "./CrtGlobe";
 import { PixelFinish } from "./PixelFinish";
 
-export const destinations = ["terminal", "wing", "books"] as const;
+import { isBoard } from "./catalog";
+
+export const destinations = ["terminal", "wing", "books", "arduino", "esp32", "fpga"] as const;
 export type Destination = (typeof destinations)[number];
 export type Stop = Destination | "reception";
 type Props = {
@@ -41,9 +44,9 @@ type Props = {
 };
 function destination(object: Object3D | null): Destination | null {
   while (object) {
-    if (object.name === "target_terminal") return "terminal";
-    if (object.name === "target_wing") return "wing";
-    if (object.name === "target_books") return "books";
+    const name = object.name;
+    const found = destinations.find(d => name === "target_" + d);
+    if (found) return found;
     object = object.parent;
   }
   return null;
@@ -63,10 +66,11 @@ export default function LabScene({
   onReady,
   onLoss,
 }: Props) {
-  const { scene: model } = useLoader(
-    GLTFLoader,
+  const [hall, workbench] = useLoader(GLTFLoader, [
     import.meta.env.BASE_URL + "museum/hall.glb",
-  );
+    import.meta.env.BASE_URL + "museum/workbench.glb",
+  ]);
+  const model = useMemo(() => new Group().add(hall.scene, workbench.scene), [hall, workbench]);
   const { camera, gl, invalidate, size } = useThree();
   const first = useRef(true);
   const lastArrival = useRef<Stop | null>(null);
@@ -107,7 +111,7 @@ export default function LabScene({
         const position = model
           .getObjectByName("aim_" + id)!
           .getWorldPosition(new Vector3());
-        if (id !== "books") position.y += id === "terminal" ? 0.88 : 0.91;
+        if (id === "wing" || id === "terminal") position.y += id === "terminal" ? 0.88 : 0.91;
         return { id, position };
       }),
     [model],
@@ -206,9 +210,14 @@ export default function LabScene({
     for (const { id, position } of guidePoints) {
       const el = signs.current[id];
       if (!el) continue;
+      if (isBoard(stop)) {
+        el.hidden = !isBoard(id);
+        continue;
+      }
       projected.copy(position).project(camera);
       el.hidden =
         entering ||
+        id === "esp32" || id === "fpga" ||
         projected.z < -1 ||
         projected.z > 1 ||
         Math.abs(projected.x) > 1.35 ||

@@ -6,7 +6,7 @@ import LabScene, {
   type Destination,
   type Stop,
 } from "./LabScene";
-import { computerScience, type Language } from "./catalog";
+import { boards, isBoard, computerScience, type Language } from "./catalog";
 import { LabLoading } from "./LabLoading";
 
 const copy = {
@@ -20,7 +20,7 @@ const copy = {
     move: "Approach",
     enter: "Enter portfolio",
     back: "Step back",
-    loading: "Opening the lab…",
+    arduino: "Arduino", esp32: "ESP32", fpga: "FPGA", workbench: "Development boards",
     hint: "Drag or use the arrow keys to look around. Choose 1 for Computer Science, 2 for the exit, or 3 for the bookshelf. Once there, press the same key to open it. Escape returns to the entrance.",
   },
   pt: {
@@ -33,7 +33,7 @@ const copy = {
     move: "Aproximar",
     enter: "Entrar no portfólio",
     back: "Voltar à entrada",
-    loading: "Abrindo o laboratório…",
+    arduino: "Arduino", esp32: "ESP32", fpga: "FPGA", workbench: "Placas de desenvolvimento",
     hint: "Arraste ou use as setas para olhar ao redor. Escolha 1 para Ciência da Computação, 2 para a saída ou 3 para a estante. Ao chegar, pressione a mesma tecla para abrir. Escape volta à entrada.",
   },
 };
@@ -92,6 +92,8 @@ export default function Tour({
       navigate("/" + language + "/articles?from=books");
     } else if (d === "wing") {
       navigate("/" + language + "/portfolios");
+    } else if (isBoard(d)) {
+      navigate("/" + language + "/portfolio/" + boards[d].slug + "?from=" + d);
     } else {
       setEntering(true);
       setHover(null);
@@ -110,7 +112,7 @@ export default function Tour({
     <section className="lab" data-interacting={busy} aria-label={t.name}>
       <h1 className="sr-only">{t.name}</h1>
       <p id="lab-help" className="sr-only">
-        {t.hint}
+        {t.hint} 4: Arduino. 5: ESP32. 6: FPGA.
       </p>
       <div
         ref={viewport}
@@ -122,7 +124,11 @@ export default function Tour({
         data-target={hover ?? ""}
         onKeyDown={(e) => {
           if (e.altKey || e.ctrlKey || e.metaKey) return;
-          if (e.repeat && ["1", "2", "3"].includes(e.key)) return;
+          if (/^[1-6]$/.test(e.key)) {
+            if (!e.repeat) pick(destinations[Number(e.key) - 1]);
+            e.preventDefault();
+            return;
+          }
           switch (e.key) {
             case "ArrowLeft":
               rotate(0.16, 0);
@@ -135,15 +141,6 @@ export default function Tour({
               break;
             case "ArrowDown":
               rotate(0, -0.12);
-              break;
-            case "1":
-              pick("terminal");
-              break;
-            case "2":
-              pick("wing");
-              break;
-            case "3":
-              pick("books");
               break;
             case "Escape":
               visit("reception");
@@ -210,6 +207,7 @@ export default function Tour({
             ← {t.back}
           </button>
         )}
+        <div className={isBoard(stop) ? "board-commands" : undefined}>
         {destinations.map((d) => (
           <button
             hidden
@@ -237,10 +235,12 @@ export default function Tour({
                       ? t.directory
                       : t.enter}
               </small>
-              <strong>{t[d]}</strong>
+              <strong>{d === "arduino" && !isBoard(stop) ? t.workbench : t[d]}</strong>
+              {isBoard(d) && stop === d && <small>{boards[d].title[language]}</small>}
             </span>
           </button>
         ))}
+        </div>
         {!ready && <LabLoading language={language} />}
       </div>
     </section>

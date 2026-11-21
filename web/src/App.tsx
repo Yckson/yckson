@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import {
   initialLanguage,
+  boards, isBoard, computerScience,
   portfolios,
   remember,
   type Language,
@@ -66,10 +67,10 @@ function MuseumPage() {
     () => navigate(root + "/portfolios?view=unavailable", { replace: true }),
     [root, navigate],
   );
+  const from = new URLSearchParams(location.search).get("from") ?? "";
   const returnUrl =
-    portfolio &&
-    new URLSearchParams(location.search).get("from") === portfolio.stop
-      ? root + "/museum?stop=" + portfolio.stop
+    (portfolio === computerScience && from === "terminal") || (isBoard(from) && portfolio === boards[from])
+      ? root + "/museum?stop=" + from
       : root;
   useEffect(() => {
     document.documentElement.lang = language === "pt" ? "pt-BR" : "en";
@@ -197,8 +198,16 @@ function MuseumPage() {
             </Link>
           </article>
         )}
-        {portfolio && (
+        {portfolio === computerScience && (
           <AcademicPortfolio language={language} returnUrl={returnUrl} />
+        )}
+        {portfolio && "project" in portfolio && (
+          <article className="wing">
+            <h1>{portfolio.title[language]}</h1>
+            <p>{portfolio.intro[language]}</p>
+            <p><a href={portfolio.url}>{portfolio.project} ↗</a></p>
+            <Link className="secondary" to={returnUrl}>← {t.back}</Link>
+          </article>
         )}
       </main>
     </div>

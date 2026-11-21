@@ -1,6 +1,9 @@
-import { computerScience } from "./catalog";
+import { computerScience, embedded, microelectronics } from "./catalog";
 
 const pages = {
+  ...Object.fromEntries([embedded, microelectronics].map(p => ["/portfolio/" + p.slug, {
+    en: [p.title.en, p.intro.en], pt: [p.title.pt, p.intro.pt],
+  }])),
   "": {
     en: ["Repository Hub", "Explore William Gabriel Yckson Araújo Braga’s home computer lab and portfolios in hardware, programming and digital systems."],
     pt: ["Hub de repositórios", "Explore o laboratório de computação de William Gabriel Yckson Araújo Braga e seus portfólios de hardware, programação e sistemas digitais."],
