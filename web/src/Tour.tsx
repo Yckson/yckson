@@ -6,7 +6,7 @@ import LabScene, {
   type Destination,
   type Stop,
 } from "./LabScene";
-import { boards, isBoard, computerScience, webMobile, type Language } from "./catalog";
+import { boards, isBoard, computerScience, webMobile, portfolios, type Language } from "./catalog";
 import { LabLoading } from "./LabLoading";
 
 const copy = {
@@ -39,6 +39,11 @@ const copy = {
     hint: "Arraste ou use as setas para olhar ao redor. Escolha 1 para Ciência da Computação, 2 para a saída ou 3 para a estante. Ao chegar, pressione a mesma tecla para abrir. Escape volta à entrada.",
   },
 };
+const guidedStops = {
+  "computer-science": "terminal", "web-and-mobile": "phone",
+  "embedded-systems": "arduino", "microelectronics-and-semiconductors": "fpga",
+} as const;
+
 export default function Tour({
   language,
   reduced,
@@ -61,11 +66,28 @@ export default function Tour({
   const [entering, setEntering] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const viewport = useRef<HTMLDivElement>(null);
-  const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  const drag = useRef<{ id: number; x: number; y: number; moved: boolean } | null>(null);
   const signs = useRef<Partial<Record<Destination, HTMLButtonElement | null>>>(
     {},
   );
   const t = copy[language];
+  const guide = portfolios.find(p => p.slug === params.get("guide"));
+  const target = guide && guidedStops[guide.slug];
+  const inBoards = isBoard(stop);
+  const targetBoard = target !== undefined && isBoard(target);
+  const atTarget = stop === target || (target === "arduino" && stop === "esp32");
+  const nextSign = targetBoard && !inBoards ? "arduino" : target;
+  const pt = language === "pt";
+  const cue = atTarget
+    ? (arrived === stop
+      ? (pt ? "Selecione o marcador novamente para entrar." : "Select the marker again to enter.")
+      : (pt ? "Aproximando…" : "Approaching…"))
+    : inBoards && !targetBoard ? t.back
+    : targetBoard && !inBoards ? (pt ? "Aproxime-se das placas à esquerda do computador." : "Approach the boards to the left of the computer.")
+    : target === "fpga" ? (pt ? "Selecione a FPGA na bancada." : "Select the FPGA on the workbench.")
+    : target === "arduino" ? (pt ? "Selecione o Arduino ou a ESP32." : "Select the Arduino or ESP32.")
+    : target === "phone" ? (pt ? "Aproxime-se do celular sobre a cama." : "Approach the phone on the bed.")
+    : (pt ? "Aproxime-se do computador sobre a mesa." : "Approach the computer on the desk.");
   const onReady = useCallback(() => setReady(true), []);
   useEffect(() => () => clearTimeout(timer.current), []);
   function interacting() {
@@ -78,7 +100,9 @@ export default function Tour({
     setHover(null);
     setFocus(null);
     setLook({ yaw: 0, pitch: 0 });
-    setParams({ stop: next }, { replace: true });
+    const nextParams = new URLSearchParams(params);
+    nextParams.set("stop", next);
+    setParams(nextParams, { replace: true });
     viewport.current?.focus({ preventScroll: true });
     interacting();
   }
@@ -153,28 +177,30 @@ export default function Tour({
           e.preventDefault();
         }}
         onPointerDown={(e) => {
-          if (e.button === 0 && !(e.target as Element).closest("button"))
-            drag.current = { x: e.clientX, y: e.clientY, moved: false };
+          if (e.isPrimary && e.button === 0 && !(e.target as Element).closest("button"))
+            drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
         }}
         onPointerMove={(e) => {
           const last = drag.current;
-          if (!last || !e.buttons) return;
+          if (!last || last.id !== e.pointerId || !e.buttons) return;
           const dx = e.clientX - last.x,
             dy = e.clientY - last.y;
           if (!last.moved && Math.hypot(dx, dy) < 4) return;
           if (!last.moved) e.currentTarget.setPointerCapture(e.pointerId);
-          drag.current = { x: e.clientX, y: e.clientY, moved: true };
+          drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: true };
           setHover(null);
-          rotate(dx * 0.005, dy * 0.004);
+          const touchGain = Math.min(0.014, Math.max(0.008, Math.PI / e.currentTarget.clientWidth));
+          rotate(dx * (e.pointerType === "touch" ? touchGain : 0.005),
+            dy * (e.pointerType === "touch" ? touchGain * 0.8 : 0.004));
         }}
-        onPointerUp={() => {
-          drag.current = null;
+        onPointerUp={(e) => {
+          if (drag.current?.id === e.pointerId) drag.current = null;
         }}
-        onPointerCancel={() => {
-          drag.current = null;
+        onPointerCancel={(e) => {
+          if (drag.current?.id === e.pointerId) drag.current = null;
         }}
-        onLostPointerCapture={() => {
-          drag.current = null;
+        onLostPointerCapture={(e) => {
+          if (e.target === e.currentTarget && drag.current?.id === e.pointerId) drag.current = null;
         }}
       >
         <Canvas
@@ -196,7 +222,7 @@ export default function Tour({
               {...look}
               reduced={reduced}
               signs={signs}
-              active={entering ? null : focus ?? hover}
+              active={entering ? null : focus ?? hover ?? target ?? null}
               onHover={setHover}
               onPick={pick}
               onArrive={setArrived}
@@ -210,12 +236,17 @@ export default function Tour({
             ← {t.back}
           </button>
         )}
+        {ready && guide && !entering && <aside className="lab-guide" data-boards={inBoards} data-phone={stop === "phone"} role="status">
+          <strong>{guide.title[language]}</strong>
+          <span>{cue}</span>
+        </aside>}
         <div className={isBoard(stop) ? "board-commands" : undefined}>
         {destinations.map((d) => (
           <button
             hidden
             key={d}
             className="waypoint"
+            data-guided={d === nextSign || (nextSign === "arduino" && inBoards && d === "esp32")}
             ref={(el) => {
               signs.current[d] = el;
             }}
@@ -228,7 +259,7 @@ export default function Tour({
             <span className="waypoint-glyph" aria-hidden="true">
               {d === "terminal" ? "›_" : "↗"}
             </span>
-            <span>
+            <span className="waypoint-label">
               <small>
                 {arrived !== d || stop !== d
                   ? t.move

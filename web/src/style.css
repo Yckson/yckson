@@ -236,6 +236,7 @@ nav a[aria-current] {
 .entry:hover .arrow {
   transform: translate(2px, -2px);
 }
+.guided-entry { display: inline-block; padding: .4rem 0 .8rem; text-decoration: underline; text-underline-offset: .2em; }
 .wing {
   min-height: 61vh;
   padding-block: 10vh;

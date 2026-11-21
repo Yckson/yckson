@@ -172,6 +172,25 @@
 .waypoint[hidden] {
   display: none;
 }
+.waypoint[data-guided="true"] {
+  border-color: var(--signal);
+  box-shadow: 0 0 12px #f5d87280;
+}
+.lab-guide {
+  position: absolute;
+  left: 12px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  max-width: min(29rem, calc(100% - 24px));
+  padding: 8px 12px;
+  border-left: 3px solid var(--signal);
+  background: #0c1b16f2;
+  color: var(--hud-ink);
+  font-size: .9rem;
+  pointer-events: none;
+}
+.lab-guide strong, .lab-guide span { display: block; }
+.lab-guide strong { color: var(--signal); }
+.lab-guide[data-boards="true"], .lab-guide[data-phone="true"] { bottom: calc(6rem + env(safe-area-inset-bottom)); }
 .board-commands {
   position: absolute;
   inset: auto 10px max(12px, env(safe-area-inset-bottom));
@@ -263,6 +282,26 @@
   .immersive * {
     transition: none !important;
   }
+}
+@media (max-width: 680px), (max-height: 500px) and (pointer: coarse) {
+  .viewport .waypoint {
+    max-width: min(8rem, 32vw);
+    min-width: 44px;
+    padding: 3px 6px;
+    border-left-width: 2px;
+  }
+  .viewport .waypoint::before {
+    content: "";
+    position: absolute;
+    inset: 50% 0 auto;
+    transform: translateY(-50%);
+    height: max(100%, 44px);
+  }
+  .board-commands .waypoint { position: relative; }
+  .viewport .waypoint-glyph { display: none; }
+  .viewport .waypoint::after { height: 7px; }
+  .viewport .waypoint-label strong { font-size: .77rem; line-height: 1.15; }
+  .viewport .waypoint-label small { font-size: .68rem; line-height: 1.15; }
 }
 .lab canvas {
   image-rendering: pixelated;
