@@ -219,11 +219,11 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "Ao orientar William na iniciação científica, Bruno destacou a iniciativa e a organização com que ele conduzia as tarefas da pesquisa. Como professor, também ressaltou seu domínio da geração de código de máquina em tempo de execução.",
           "As William’s research supervisor, Bruno highlighted the initiative and organization William brought to his research tasks. As his professor, he also singled out William’s command of runtime machine-code generation."
         ))}
-        {embeddedEntry(t("Professor de Seminários em Computação", "Computing seminars instructor"), "Rogério Patrício Chagas do Nascimento", t(
+        {renderEntry(t("Professor de Seminários em Computação", "Computing seminars instructor"), "Rogério Patrício Chagas do Nascimento", t(
           "Rogério situou William entre os 10% de estudantes mais dedicados e promissores que conheceu em 18 anos de docência. Destacou seu papel na criação da liga de hardware e robótica e nas parcerias com a Toradex e a Espressif, que abriram oportunidades para outros estudantes.",
           "Rogério counted William among the top 10% of students he had taught in 18 years for dedication and promise. He highlighted William’s role in founding the hardware and robotics league and building partnerships with Toradex and Espressif that opened opportunities for other students."
         ))}
-        {embeddedEntry(t("Professor de Arquitetura de Computadores", "Computer architecture instructor"), "Calebe Conceição", t(
+        {renderEntry(t("Professor de Arquitetura de Computadores", "Computer architecture instructor"), "Calebe Conceição", t(
           "Calebe destacou a capacidade de William de envolver colegas em projetos práticos de hardware. Como exemplo, descreveu seu trabalho na CoreTECH, onde William coordenou estudantes em testes de módulos antes do lançamento e no desenvolvimento de drivers e aplicações de exemplo.",
           "Calebe highlighted William’s ability to bring fellow students into hands-on hardware projects. He described William’s work at CoreTECH coordinating students as they tested pre-release modules and developed drivers and example applications."
         ))}
