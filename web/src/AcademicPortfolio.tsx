@@ -175,11 +175,11 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "Minha equipe conquistou o primeiro lugar entre as equipes do Nordeste no Cadathlon, em Gramado.",
           "At the Cadathlon in Gramado, my team placed first among teams from Northeast Brazil."
         ))}
-        {entry("2025 · Lagarto, Sergipe", t("1º lugar na PROGBASE", "First place at PROGBASE"), t(
+        {renderEntry("2025 · Lagarto, Sergipe", t("1º lugar na PROGBASE", "First place at PROGBASE"), t(
           "Minha equipe venceu a maratona de programação da Escola Regional de Computação Bahia, Alagoas e Sergipe (ERBASE).",
           "My team won the programming contest at the Regional School of Computing for Bahia, Alagoas and Sergipe (ERBASE)."
         ))}
-        {entry("2025 · São Paulo", t("Finalista da Maratona de Programação da SBC", "Brazilian Programming Marathon national finalist"), t(
+        {renderEntry("2025 · São Paulo", t("Finalista da Maratona de Programação da SBC", "Brazilian Programming Marathon national finalist"), t(
           "Minha equipe disputou a final nacional da Maratona de Programação da Sociedade Brasileira de Computação (SBC) no bairro da Liberdade, em São Paulo.",
           "My team competed in the national finals of the Brazilian Computer Society (SBC) Programming Marathon in São Paulo’s Liberdade neighborhood."
         ))}
