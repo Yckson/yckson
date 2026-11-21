@@ -9,7 +9,16 @@ const debugging: Technology[] = [
 const digitalDesign: Technology[] = [
   ["RISC-V", "riscv"], ["MIPS", "cpu"], ["Verilog", "verilog"], ["FPGA", "microchip"],
 ];
+const webStack: Technology[] = [
+    ["React Native", "reactnative"], ["Expo", "expo"],
+    ["JavaScript", "javascript"], ["PHP", "php"], ["SQL", "database"], ["React", "react"],
+    ["NestJS", "nestjs"], ["PostgreSQL", "postgresql"], ["Docker Compose", "docker"],
+    ["Laravel", "laravel"], ["MySQL", "mysql"], ["Git", "git"], ["GitHub", "github"],
+    ["GitHub Actions", "githubactions"], ["Claude Code", "claudecode"],
+    ["Codex", "codex"], ["Antigravity", "antigravity"],
+];
 const technologies = {
+  "web-and-mobile": webStack,
   "embedded-systems": [...debugging, ["Arduino", "arduino"], ["ESP32", "microchip"]],
   "microelectronics-and-semiconductors": digitalDesign,
   "computer-science": [
@@ -17,12 +26,7 @@ const technologies = {
     ["Assembly", "assembly-generic"], ["x86 / x86-64", "assembly-intel"],
     ["Ghidra", "ghidra"], ["Arduino", "arduino"], ["FFmpeg", "ffmpeg"],
     ["Python", "python"], ["Cryptography", "key-round", "Criptografia"], ["Tree-sitter", "list-tree"],
-    ["Streamlit", "streamlit"], ["React Native", "reactnative"], ["Expo", "expo"],
-    ["JavaScript", "javascript"], ["PHP", "php"], ["SQL", "database"], ["React", "react"],
-    ["NestJS", "nestjs"], ["PostgreSQL", "postgresql"], ["Docker Compose", "docker"],
-    ["Laravel", "laravel"], ["MySQL", "mysql"], ["Git", "git"], ["GitHub", "github"],
-    ["GitHub Actions", "githubactions"], ["Claude Code", "claudecode"],
-    ["Codex", "codex"], ["Antigravity", "antigravity"],
+    ["Streamlit", "streamlit"], ...webStack,
   ],
 } satisfies Record<(typeof portfolios)[number]["slug"], Technology[]>;
 

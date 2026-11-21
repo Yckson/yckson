@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { computerScience, embedded, microelectronics, portfolios, type Language } from "./catalog";
+import { computerScience, embedded, microelectronics, webMobile, portfolios, type Language } from "./catalog";
 import "./academic.css";
 import { ExperienceTechnologies } from "./ExperienceTechnologies";
 import { ifbaResearch } from "./publications";
@@ -44,8 +44,11 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
   const cs = portfolio === computerScience;
   const isEmbedded = portfolio === embedded;
   const isMicro = portfolio === microelectronics;
+  const isWeb = portfolio === webMobile;
   const omit = () => null;
   const entry = cs ? renderEntry : omit;
+  const webEntry = cs || isWeb ? renderEntry : omit;
+  const otherEntry = isWeb ? omit : renderEntry;
   const embeddedEntry = cs || isEmbedded ? renderEntry : omit;
   const digitalEntry = cs || isMicro ? renderEntry : omit;
   const coreTechPartnerships = () => renderEntry("CoreTECH · UFS", t("Parcerias com a Toradex e a Espressif", "Partnerships with Toradex and Espressif"), t(
@@ -86,12 +89,12 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
     <section className="academic-section">
       <h2>{sectionNames[section][pt ? 0 : 1]}</h2>
       {section === "research" && <>
-        {cs && ifbaResearch.map(paper => renderEntry(
+        {(cs || isWeb) && ifbaResearch.map(paper => renderEntry(
           paper.venue + " · " + paper.kind[language], paper.title[language],
           paper.summary[language], paper.url, t("Ler publicação", "Read publication")
         ))}
         {entry("PIBIC · 2025/2026", t("Determinação de Plágio em Código-fonte", "Detecting Plagiarism in Source Code"), t("Na iniciação científica, sob orientação de Bruno Otávio Piedade Prado, investiguei se ainda é possível reconhecer a origem comum de dois programas em C ou C++ depois que a forma do código muda. Usamos o MAU para preparar pares de programas do Code4Bench, verificamos seu comportamento e extraímos blocos sintáticos com Tree-sitter.", "In my undergraduate research supervised by Bruno Otávio Piedade Prado, I studied whether two C or C++ programs could still be traced to a common source after changes to their code. We used MAU to prepare pairs from Code4Bench, checked their behavior and extracted syntax blocks with Tree-sitter."))}
-        {renderEntry(t("Publicado na ERBASE 2025 · DCOMP", "Published at ERBASE 2025 · DCOMP"), t("Explorando Pensamento Computacional com Minecraft e Arduino para Iniciação à Programação e Microeletrônica", "Exploring Computational Thinking with Minecraft and Arduino to Introduce Programming and Microelectronics"), t("Na Escola Regional de Computação Bahia, Alagoas e Sergipe (ERBASE), publiquei este artigo com Davi Araújo do Nascimento. Construímos três protótipos para explorar o ensino de programação e microeletrônica. Um botão físico acionava uma plantação no Minecraft, uma intrusão no jogo disparava um alarme e um LED indicava a atividade de uma fornalha virtual. Verificamos a troca de sinais nos três protótipos. A avaliação com estudantes ficou para uma etapa futura.", "Davi Araújo do Nascimento and I published this paper at the Regional School of Computing for Bahia, Alagoas and Sergipe (ERBASE). We built three prototypes for teaching programming and microelectronics. A physical button triggered a Minecraft farm, an intrusion in the game set off an alarm, and an LED indicated when a virtual furnace was active. We verified signal exchange in all three prototypes. Evaluation with students remains an open question."))}
+        {otherEntry(t("Publicado na ERBASE 2025 · DCOMP", "Published at ERBASE 2025 · DCOMP"), t("Explorando Pensamento Computacional com Minecraft e Arduino para Iniciação à Programação e Microeletrônica", "Exploring Computational Thinking with Minecraft and Arduino to Introduce Programming and Microelectronics"), t("Na Escola Regional de Computação Bahia, Alagoas e Sergipe (ERBASE), publiquei este artigo com Davi Araújo do Nascimento. Construímos três protótipos para explorar o ensino de programação e microeletrônica. Um botão físico acionava uma plantação no Minecraft, uma intrusão no jogo disparava um alarme e um LED indicava a atividade de uma fornalha virtual. Verificamos a troca de sinais nos três protótipos. A avaliação com estudantes ficou para uma etapa futura.", "Davi Araújo do Nascimento and I published this paper at the Regional School of Computing for Bahia, Alagoas and Sergipe (ERBASE). We built three prototypes for teaching programming and microelectronics. A physical button triggered a Minecraft farm, an intrusion in the game set off an alarm, and an LED indicated when a virtual furnace was active. We verified signal exchange in all three prototypes. Evaluation with students remains an open question."))}
         {digitalEntry(
           t("Publicado na ERBASE 2025 · DCOMP e Programa de Pós-Graduação em Ciência da Computação (PROCC)", "Published at ERBASE 2025 · DCOMP and Graduate Program in Computer Science (PROCC)"),
           t("Uso de Jogos no Ensino de Arquitetura de Processadores e Sistemas Digitais: Um Mapeamento Sistemático", "Using Games to Teach Processor Architecture and Digital Systems: A Systematic Mapping Study"),
@@ -99,6 +102,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         )}
       </>}
       {section === "projects" && <>
+        {isWeb && renderEntry("React Native · Expo", t("Aplicativo para um dispositivo vestível", "Wearable companion app"), t("Na Prática Orientada em Computação, estou desenvolvendo o aplicativo móvel que acompanha um dispositivo vestível. Uso React Native, Expo e o ambiente de desenvolvimento em nuvem do Expo.", "For my supervised computing project, I’m building the mobile companion app for a wearable device using React Native, Expo and Expo’s cloud development environment."))}
         {entry("C++ · x86-64", "PicoQuickProcessor (PQP)", t(
           "Como executar em um computador x86-64 um programa escrito para um processador de 32 bits com apenas 256 bytes de memória? Trabalhei com a arquitetura didática criada pelo professor Bruno Otávio Piedade Prado. O repositório reúne um interpretador e um compilador just-in-time (JIT) que traduz instruções do PQP para código de máquina x86-64 durante a execução. Documentei a tradução das operações aritméticas, dos acessos à memória e dos desvios.",
           "How do you run a program written for a 32-bit processor with just 256 bytes of memory on an x86-64 computer? I worked with the teaching architecture designed by Professor Bruno Otávio Piedade Prado. The repository includes an interpreter and a just-in-time (JIT) compiler that translates PQP instructions into x86-64 machine code at runtime. I documented how arithmetic, memory operations and branches are translated."
@@ -107,7 +111,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "Para o SiriBots, trabalhei em um sistema que reúne as câmeras da pista e a cronometragem da chegada. O operador escolhe entre uma webcam ligada a um computador e uma câmera conectada a uma placa ODROID. Outras fontes podem participar por meio de um conector próprio. Na linha de chegada, o Arduino registra o tempo quando o robô cruza o feixe de laser. A ODROID recebe esse tempo pela porta serial e o envia à central de transmissão, onde o operador pode sobrepô-lo ao vídeo. O público acompanha a corrida em um aplicativo que encontra a central na rede local.",
           "For SiriBots, I worked on a system that brings track cameras and finish-line timing into the same broadcast. The operator can switch between a computer webcam and a camera connected to an ODROID board. Other sources can join through their own connectors. When a robot crosses the laser beam at the finish line, the Arduino records its finish time. The ODROID reads that time over a serial connection and sends it to the streaming hub, where the operator can overlay it on the video. Spectators watch through an app that discovers the hub on the local network."
         ), "https://github.com/Yckson/siribots-transmission-sys/branches")}
-        {entry("React · NestJS · PostgreSQL", "EndoCare", t(
+        {webEntry("React · NestJS · PostgreSQL", "EndoCare", t(
           "Na disciplina de Engenharia de Software II, participei do desenvolvimento de uma aplicação para acompanhar sintomas de endometriose. A interface em React se comunica com uma API em NestJS, com módulos de tratamentos, relatórios e permissões. O repositório inclui a especificação do sistema e a configuração Docker Compose para executar a aplicação com seu banco de dados.",
           "In Software Engineering II, I worked on a web application for tracking endometriosis symptoms. Its React interface connects to a NestJS API with modules for treatments, reports and permissions. The repository includes the system specification and a Docker Compose setup for running the application with its database."
         ), "https://github.com/Yckson/endocare")}
@@ -120,15 +124,15 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "I built a viewer that reads OBJ models and renders them directly in the terminal using ncurses. It can also capture PPM frames for conversion to video with FFmpeg. The repository includes sample models and a recorded demonstration."
         ), "https://github.com/Yckson/3D-terminal")}
         {digitalEntry("Verilog HDL", "MIPS single-cycle", t("Na disciplina de Arquitetura de Computadores, projetei e implementei um processador MIPS de ciclo único. O circuito executa instruções aritméticas, lógicas, de acesso à memória e de controle de fluxo.", "For my computer architecture course, I designed and implemented a single-cycle MIPS processor that executes arithmetic, logic, memory and control-flow instructions."), "https://github.com/Yckson/Arquitetura/tree/main/Projetos/MIPS%20Ciclo%20%C3%9Anico")}
-        {renderEntry("FPGA · Altera DE2", t("Escrita no LCD", "Writing to the LCD"), t("Desenvolvi em Verilog o módulo que controla o protocolo do LCD da placa DE2 com FPGA Cyclone II. Com ele, é possível atualizar as cadeias de caracteres exibidas pelo próprio circuito.", "I wrote a Verilog module that drives the LCD protocol on the Cyclone II–based DE2 board, allowing the circuit to update the text on the display."), "https://github.com/Yckson/Arquitetura/tree/main/Projetos/Modulo%20LCD%20DE2%20Cyclone%20II")}
+        {otherEntry("FPGA · Altera DE2", t("Escrita no LCD", "Writing to the LCD"), t("Desenvolvi em Verilog o módulo que controla o protocolo do LCD da placa DE2 com FPGA Cyclone II. Com ele, é possível atualizar as cadeias de caracteres exibidas pelo próprio circuito.", "I wrote a Verilog module that drives the LCD protocol on the Cyclone II–based DE2 board, allowing the circuit to update the text on the display."), "https://github.com/Yckson/Arquitetura/tree/main/Projetos/Modulo%20LCD%20DE2%20Cyclone%20II")}
         {digitalEntry("RV32I · Assembly", t("Caminho de dados RISC-V", "RISC-V datapath"), t("Meus estudos de arquitetura incluem um caminho de dados para RV32I e programas em Assembly MIPS.", "My architecture work includes an RV32I datapath and MIPS assembly programs."), "https://github.com/Yckson/RISC-V-RV32I")}
         {entry(t("Projeto e Análise de Algoritmos", "Algorithm Design and Analysis"), t("AES e Diffie–Hellman em C", "AES and Diffie–Hellman in C"), t(
           "Implementei em C a cifra AES em modo ECB e a troca de chaves Diffie–Hellman de 2.048 bits. Para trabalhar com números desse tamanho, escrevi as operações de aritmética de inteiros grandes e usei a redução de Barrett nos cálculos modulares.",
           "I implemented the AES cipher in ECB mode and 2,048-bit Diffie–Hellman key exchange in C. To handle numbers of that size, I wrote the large-integer arithmetic and used Barrett reduction for modular calculations."
         ), "https://github.com/Yckson/PAA/tree/main/Projetos/III_UNIDADE/Criptografia")}
         {entry("KMP · Dijkstra", t("Algoritmos e geração de código", "Algorithms and code generation"), t("Implementei busca de padrões com KMP, percursos em largura e profundidade e caminhos mínimos com Dijkstra. Também trabalhei com ordenação, programação dinâmica e geração de código em tempo de execução.", "I implemented KMP pattern matching, breadth-first and depth-first traversals, and Dijkstra’s shortest-path algorithm. I also worked on sorting, dynamic programming and runtime code generation."))}
-        {entry("LED · Luz na Educação", "Divulga Aí", t("Liderei o desenvolvimento da aplicação de divulgação de eventos e iniciativas educacionais, trabalhando tanto na interface quanto no backend.", "I led development of an application for sharing educational events and initiatives, working on both the interface and the backend."))}
-        {entry("Laravel · PHP · MySQL", t("Evasão escolar", "School dropout analysis"), t("Desenvolvi uma aplicação web para ajudar a identificar possíveis casos de evasão no ensino médio.", "I developed a web application to help identify potential cases of students dropping out of secondary school."))}
+        {webEntry("LED · Luz na Educação", "Divulga Aí", t("Liderei o desenvolvimento da aplicação de divulgação de eventos e iniciativas educacionais, trabalhando tanto na interface quanto no backend.", "I led development of an application for sharing educational events and initiatives, working on both the interface and the backend."))}
+        {webEntry("Laravel · PHP · MySQL", t("Evasão escolar", "School dropout analysis"), t("Desenvolvi uma aplicação web para ajudar a identificar possíveis casos de evasão no ensino médio.", "I developed a web application to help identify potential cases of students dropping out of secondary school."))}
       </>}
       {section === "experience" && <>
         <ExperienceTechnologies slug={portfolio.slug} language={language} />
@@ -164,11 +168,11 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "Implemento estruturas de dados, algoritmos de grafos, busca de padrões e programação dinâmica. Em C, escrevi a aritmética de inteiros grandes para uma troca de chaves Diffie–Hellman. Na pesquisa, usei Tree-sitter para comparar blocos de código. Em Inteligência Artificial, trabalhei com Python e Streamlit para explorar n-gramas e sugerir o próximo token em código C.",
           "I implement data structures, graph algorithms, pattern matching and dynamic programming. In C, I wrote the large-integer arithmetic for Diffie–Hellman key exchange. In my research, I used Tree-sitter to compare code blocks. In my AI course, I worked with Python and Streamlit to explore n-grams and predict the next token in C code."
         ))}
-        {entry("React Native · Expo", t("Aplicativo para um dispositivo vestível", "Mobile app for a wearable device"), t(
+        {webEntry("React Native · Expo", t("Aplicativo para um dispositivo vestível", "Mobile app for a wearable device"), t(
           "Na disciplina de Prática Orientada em Computação, estou desenvolvendo um projeto que combina um componente vestível e um aplicativo móvel. Desenvolvo o aplicativo em React Native com Expo e uso o ambiente de desenvolvimento em nuvem do Expo (expo.dev).",
           "For my supervised computing project, I’m developing a wearable component and its companion mobile app. I’m building the app with React Native and Expo, using Expo’s cloud development environment (expo.dev)."
         ))}
-        {entry("JavaScript · PHP · SQL", t("Aplicações web e bancos de dados", "Web applications and databases"), t(
+        {webEntry("JavaScript · PHP · SQL", t("Aplicações web e bancos de dados", "Web applications and databases"), t(
           "Trabalho da interface ao banco de dados. No EndoCare, participei de uma aplicação com React, NestJS, PostgreSQL e Docker Compose. Para o projeto sobre evasão escolar, desenvolvi uma aplicação com Laravel e MySQL. Uso Git e GitHub para versionar código e organizar o trabalho em equipe. Também configuro workflows no GitHub Actions para automatizar tarefas do projeto e trabalho com agentes de desenvolvimento usando Claude Code, Codex e Antigravity.",
           "I work across the interface, backend and database. On EndoCare, I contributed to an application built with React, NestJS, PostgreSQL and Docker Compose. For the school dropout project, I developed a web application with Laravel and MySQL. I use Git and GitHub for version control and team collaboration. I also configure GitHub Actions workflows to automate project tasks and use Claude Code, Codex and Antigravity for agent-assisted development."
         ))}
@@ -186,16 +190,17 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         ))}
       </>}
       {section === "achievements" && <>
+        {isWeb && renderEntry("LED · Luz na Educação", "Divulga Aí", t("Liderei o desenvolvimento da interface e do backend de uma aplicação de divulgação de iniciativas educacionais.", "I led development of both the interface and backend of an app for sharing educational initiatives."))}
         {isEmbedded && coreTechPartnerships()}
         {isMicro && renderEntry("CSBC 2026 · Gramado", "Cadathlon", t(
           "Minha equipe conquistou o primeiro lugar entre as equipes do Nordeste no Cadathlon, em Gramado.",
           "At the Cadathlon in Gramado, my team placed first among teams from Northeast Brazil."
         ))}
-        {renderEntry("2025 · Lagarto, Sergipe", t("1º lugar na PROGBASE", "First place at PROGBASE"), t(
+        {otherEntry("2025 · Lagarto, Sergipe", t("1º lugar na PROGBASE", "First place at PROGBASE"), t(
           "Minha equipe venceu a maratona de programação da Escola Regional de Computação Bahia, Alagoas e Sergipe (ERBASE).",
           "My team won the programming contest at the Regional School of Computing for Bahia, Alagoas and Sergipe (ERBASE)."
         ))}
-        {renderEntry("2025 · São Paulo", t("Finalista da Maratona de Programação da SBC", "Brazilian Programming Marathon national finalist"), t(
+        {otherEntry("2025 · São Paulo", t("Finalista da Maratona de Programação da SBC", "Brazilian Programming Marathon national finalist"), t(
           "Minha equipe disputou a final nacional da Maratona de Programação da Sociedade Brasileira de Computação (SBC) no bairro da Liberdade, em São Paulo.",
           "My team competed in the national finals of the Brazilian Computer Society (SBC) Programming Marathon in São Paulo’s Liberdade neighborhood."
         ))}
@@ -218,33 +223,34 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           "Durante o congresso, participei da Escola de Inverno da Maratona de Programação da Sociedade Brasileira de Computação (SBC). Minha equipe ficou em quinto lugar na competição da escola.",
           "During the congress, I took part in the Brazilian Computer Society’s Programming Marathon Winter School. My team placed fifth in the school’s competition."
         ))}
-        {renderEntry("CoreTECH · 03/2025", t("Direção de projetos de hardware e robótica", "Leading hardware and robotics projects"), t("Na liga acadêmica da UFS, coordeno equipes, organizo repositórios e acompanho entregas técnicas. Entre os projetos estão uma instrução SHA-256 para um simulador RISC-V, captação de energia para alimentar um nó IoT e atividades com módulos Toradex baseados no NXP i.MX95.", "At the UFS academic league, I coordinate teams, organize repositories and track technical deliverables. Projects include a SHA-256 instruction for a RISC-V simulator, energy harvesting to power an IoT node, and work with Toradex modules based on the NXP i.MX95."))}
-        {entry("SofTeam · 2025", t("Da coordenação ao código", "From coordination to code"), t("Na empresa júnior de computação da UFS, acompanho escopo, prioridades e cronogramas de projetos de software. Também participei do desenvolvimento de um sistema de gestão de estoque.", "At the UFS student-run computing company, I track project scope, priorities and schedules. I also contributed to the development of an inventory management system."))}
+        {otherEntry("CoreTECH · 03/2025", t("Direção de projetos de hardware e robótica", "Leading hardware and robotics projects"), t("Na liga acadêmica da UFS, coordeno equipes, organizo repositórios e acompanho entregas técnicas. Entre os projetos estão uma instrução SHA-256 para um simulador RISC-V, captação de energia para alimentar um nó IoT e atividades com módulos Toradex baseados no NXP i.MX95.", "At the UFS academic league, I coordinate teams, organize repositories and track technical deliverables. Projects include a SHA-256 instruction for a RISC-V simulator, energy harvesting to power an IoT node, and work with Toradex modules based on the NXP i.MX95."))}
+        {webEntry("SofTeam · 2025", t("Da coordenação ao código", "From coordination to code"), t("Na empresa júnior de computação da UFS, acompanho escopo, prioridades e cronogramas de projetos de software. Também participei do desenvolvimento de um sistema de gestão de estoque.", "At the UFS student-run computing company, I track project scope, priorities and schedules. I also contributed to the development of an inventory management system."))}
         {digitalEntry("2025", t("Circuitos e sistemas em Sergipe", "Circuits and systems in Sergipe"), t("Sou membro fundador do capítulo estudantil da Circuits and Systems Society (CASS) do Institute of Electrical and Electronics Engineers (IEEE) na UFS. Participei da organização do primeiro IEEE CASS Sergipe Workshop, que reuniu pesquisadores e profissionais da indústria.", "I am a founding member of the UFS student chapter of the Circuits and Systems Society (CASS), part of the Institute of Electrical and Electronics Engineers (IEEE). I helped organize the first IEEE CASS Sergipe Workshop, bringing together researchers and industry professionals."))}
       </>}
       {section === "studies" && <>
-        {!cs && renderEntry("UFS · 2024.1", t("Sistemas digitais", "Digital systems"), t("Cursei Fundamentos e Prática de Sistemas Digitais.", "I studied digital systems theory and completed the accompanying lab."))}
-        {!cs && renderEntry("UFS · 2024.2", t("Arquitetura de Computadores", "Computer Architecture"), isEmbedded
+        {(isMicro || isEmbedded) && renderEntry("UFS · 2024.1", t("Sistemas digitais", "Digital systems"), t("Cursei Fundamentos e Prática de Sistemas Digitais.", "I studied digital systems theory and completed the accompanying lab."))}
+        {(isMicro || isEmbedded) && renderEntry("UFS · 2024.2", t("Arquitetura de Computadores", "Computer Architecture"), isEmbedded
           ? t("Cursei Arquitetura de Computadores e Sistemas Embarcados.", "I took Computer Architecture and Embedded Systems.")
           : t("Na disciplina de Arquitetura de Computadores, implementei em Verilog um processador MIPS de ciclo único.", "In Computer Architecture, I implemented a single-cycle MIPS processor in Verilog."))}
         {isEmbedded && renderEntry("UFS · 2025.1", t("Interface Hardware/Software", "Hardware/Software Interface"), t("Na disciplina de Interface Hardware/Software, desenvolvi drivers para Linux. Nesse semestre também cursei Sistemas Operacionais e Redes.", "I developed Linux drivers in Hardware/Software Interface. That semester I also took Operating Systems and Networks."))}
         {cs && terms.map(([term, ptTitle, enTitle, ptBody, enBody]) => entry(term, t(ptTitle,enTitle), t(ptBody,enBody)))}
-        {entry("IFBA · Seabra", t("Técnico em Informática", "Technical education in IT"), t("Antes de entrar na UFS, fiz o curso técnico integrado em Informática no Instituto Federal da Bahia. Complementei a formação com cursos de front-end, banco de dados e web design em 2023.", "Before entering UFS, I studied IT in an integrated technical program at the Federal Institute of Bahia. In 2023 I also took courses in frontend development, databases and web design."))}
+        {webEntry("IFBA · Seabra", t("Técnico em Informática", "Technical education in IT"), t("Antes de entrar na UFS, fiz o curso técnico integrado em Informática no Instituto Federal da Bahia. Complementei a formação com cursos de front-end, banco de dados e web design em 2023.", "Before entering UFS, I studied IT in an integrated technical program at the Federal Institute of Bahia. In 2023 I also took courses in frontend development, databases and web design."))}
       </>}
       {section === "recommendations" && <>
-        {renderEntry(t("Orientador de iniciação científica", "Undergraduate research supervisor"), "Bruno Otávio Piedade Prado", t(
+        {isWeb && <p>{t("Ainda não há recomendações ou certificações publicadas para Web e Mobile.", "There are no published Web & Mobile recommendations or certifications yet.")}</p>}
+        {otherEntry(t("Orientador de iniciação científica", "Undergraduate research supervisor"), "Bruno Otávio Piedade Prado", t(
           "Ao orientar William na iniciação científica, Bruno destacou a iniciativa e a organização com que ele conduzia as tarefas da pesquisa. Como professor, também ressaltou seu domínio da geração de código de máquina em tempo de execução.",
           "As William’s research supervisor, Bruno highlighted the initiative and organization William brought to his research tasks. As his professor, he also singled out William’s command of runtime machine-code generation."
         ))}
-        {renderEntry(t("Professor de Seminários em Computação", "Computing seminars instructor"), "Rogério Patrício Chagas do Nascimento", t(
+        {otherEntry(t("Professor de Seminários em Computação", "Computing seminars instructor"), "Rogério Patrício Chagas do Nascimento", t(
           "Rogério situou William entre os 10% de estudantes mais dedicados e promissores que conheceu em 18 anos de docência. Destacou seu papel na criação da liga de hardware e robótica e nas parcerias com a Toradex e a Espressif, que abriram oportunidades para outros estudantes.",
           "Rogério counted William among the top 10% of students he had taught in 18 years for dedication and promise. He highlighted William’s role in founding the hardware and robotics league and building partnerships with Toradex and Espressif that opened opportunities for other students."
         ))}
-        {renderEntry(t("Professor de Arquitetura de Computadores", "Computer architecture instructor"), "Calebe Conceição", t(
+        {otherEntry(t("Professor de Arquitetura de Computadores", "Computer architecture instructor"), "Calebe Conceição", t(
           "Calebe destacou a capacidade de William de envolver colegas em projetos práticos de hardware. Como exemplo, descreveu seu trabalho na CoreTECH, onde William coordenou estudantes em testes de módulos antes do lançamento e no desenvolvimento de drivers e aplicações de exemplo.",
           "Calebe highlighted William’s ability to bring fellow students into hands-on hardware projects. He described William’s work at CoreTECH coordinating students as they tested pre-release modules and developed drivers and example applications."
         ))}
-        {renderEntry(t("Certificação · Cadence", "Certification · Cadence"), "Cadence Mentorship Program for University Students", t(
+        {otherEntry(t("Certificação · Cadence", "Certification · Cadence"), "Cadence Mentorship Program for University Students", t(
           "Concluí o programa de mentoria da Cadence, com apresentações sobre a indústria de microeletrônica e encontros sobre caminhos de carreira.",
           "I completed Cadence’s mentorship program, attending microelectronics industry presentations and mentoring sessions on career paths."
         ), "https://www.credly.com/badges/e204ee28-3c11-4432-908e-bb12983d3fc5", t("Ver credencial no Credly", "View credential on Credly"))}

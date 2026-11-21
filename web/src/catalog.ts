@@ -28,11 +28,19 @@ export const microelectronics = {
   project: 'Verilog · LCD / Altera DE2',
   url: 'https://github.com/Yckson/Arquitetura/tree/main/Projetos/Modulo%20LCD%20DE2%20Cyclone%20II'
 } as const
+export const webMobile = {
+  slug: 'web-and-mobile',
+  title: { en: 'Web & Mobile', pt: 'Web e Mobile' },
+  intro: {
+    pt: 'Desenvolvo interfaces web, APIs e aplicativos móveis. No EndoCare, trabalhei com React, NestJS e PostgreSQL. Hoje desenvolvo em React Native e Expo um aplicativo para acompanhar um dispositivo vestível.',
+    en: 'I build web interfaces, APIs and mobile apps. On EndoCare, I worked with React, NestJS and PostgreSQL. I am currently building a companion app for a wearable device with React Native and Expo.'
+  }
+} as const
 export const boards = { arduino: embedded, esp32: embedded, fpga: microelectronics } as const
 export function isBoard(id: string): id is keyof typeof boards {
   return Object.hasOwn(boards, id)
 }
-export const portfolios = [computerScience, embedded, microelectronics] as const
+export const portfolios = [computerScience, embedded, microelectronics, webMobile] as const
 
 export function readPreference(key: string) {
   try { return localStorage.getItem('museum.' + key) } catch { return null }

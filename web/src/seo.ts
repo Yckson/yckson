@@ -1,7 +1,7 @@
-import { computerScience, embedded, microelectronics } from "./catalog";
+import { computerScience, embedded, microelectronics, webMobile } from "./catalog";
 
 const pages = {
-  ...Object.fromEntries([embedded, microelectronics].map(p => ["/portfolio/" + p.slug, {
+  ...Object.fromEntries([embedded, microelectronics, webMobile].map(p => ["/portfolio/" + p.slug, {
     en: [p.title.en, p.intro.en], pt: [p.title.pt, p.intro.pt],
   }])),
   "": {

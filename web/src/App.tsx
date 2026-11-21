@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import {
   initialLanguage,
-  boards, isBoard, computerScience,
+  boards, isBoard, computerScience, webMobile,
   portfolios,
   remember,
   type Language,
@@ -68,7 +68,7 @@ function MuseumPage() {
   );
   const from = new URLSearchParams(location.search).get("from") ?? "";
   const returnUrl =
-    (portfolio === computerScience && from === "terminal") || (isBoard(from) && portfolio === boards[from])
+    (portfolio === computerScience && from === "terminal") || (portfolio === webMobile && from === "phone") || (isBoard(from) && portfolio === boards[from])
       ? root + "/museum?stop=" + from
       : root;
   useEffect(() => {
