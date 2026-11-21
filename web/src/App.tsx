@@ -27,8 +27,8 @@ const Tour = lazy(() => import("./Tour"));
 
 const copy = {
   en: {
-    name: "Repository Hub",
-    title: "Repository Hub",
+    name: "Portfolio Hub",
+    title: "Portfolio Hub",
     index: "Portfolios",
     articles: "Articles",
     emptyArticles: "No articles published yet.",
@@ -38,8 +38,8 @@ const copy = {
     label: "Language",
   },
   pt: {
-    name: "Hub de repositórios",
-    title: "Hub de repositórios",
+    name: "Hub de Portfólios",
+    title: "Hub de Portfólios",
     index: "Portfólios",
     articles: "Artigos",
     emptyArticles: "Nenhum artigo publicado por enquanto.",

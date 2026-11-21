@@ -11,7 +11,7 @@ import { LabLoading } from "./LabLoading";
 
 const copy = {
   en: {
-    name: "Repository Hub",
+    name: "Portfolio Hub",
     terminal: computerScience.title.en,
     wing: "Exit",
     books: "Articles",
@@ -24,7 +24,7 @@ const copy = {
     hint: "Drag or use the arrow keys to look around. Choose 1 for Computer Science, 2 for the exit, or 3 for the bookshelf. Once there, press the same key to open it. Escape returns to the entrance.",
   },
   pt: {
-    name: "Hub de repositórios",
+    name: "Hub de Portfólios",
     terminal: computerScience.title.pt,
     wing: "Saída",
     books: "Artigos",
