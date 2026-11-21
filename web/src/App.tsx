@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import {
   initialLanguage,
+  boards, isBoard, computerScience, webMobile,
   portfolios,
   remember,
   type Language,
@@ -18,6 +19,7 @@ import { TourBoundary } from "./TourBoundary";
 import { AcademicPortfolio } from "./AcademicPortfolio";
 import { useDisplayPreferences } from "./Accessibility";
 import { LabLoading } from "./LabLoading";
+import { Bookshelf } from "./Bookshelf";
 import { metadata, updateHead } from "./seo";
 import "./style.css";
 import "./lab.css";
@@ -26,22 +28,20 @@ const Tour = lazy(() => import("./Tour"));
 
 const copy = {
   en: {
-    name: "Repository Hub",
-    title: "Repository Hub",
+    name: "Portfolio Hub",
+    title: "Portfolio Hub",
     index: "Portfolios",
     articles: "Articles",
-    emptyArticles: "No articles published yet.",
     wing: "Portfolio wing",
     back: "Return to the lab",
     skip: "Skip to content",
     label: "Language",
   },
   pt: {
-    name: "Hub de repositórios",
-    title: "Hub de repositórios",
+    name: "Hub de Portfólios",
+    title: "Hub de Portfólios",
     index: "Portfólios",
     articles: "Artigos",
-    emptyArticles: "Nenhum artigo publicado por enquanto.",
     wing: "Ala de portfólio",
     back: "Voltar ao laboratório",
     skip: "Pular para o conteúdo",
@@ -66,10 +66,10 @@ function MuseumPage() {
     () => navigate(root + "/portfolios?view=unavailable", { replace: true }),
     [root, navigate],
   );
+  const from = new URLSearchParams(location.search).get("from") ?? "";
   const returnUrl =
-    portfolio &&
-    new URLSearchParams(location.search).get("from") === portfolio.stop
-      ? root + "/museum?stop=" + portfolio.stop
+    (portfolio === computerScience && from === "terminal") || (portfolio === webMobile && from === "phone") || (isBoard(from) && portfolio === boards[from])
+      ? root + "/museum?stop=" + from
       : root;
   useEffect(() => {
     document.documentElement.lang = language === "pt" ? "pt-BR" : "en";
@@ -184,7 +184,7 @@ function MuseumPage() {
         {articles && (
           <article className="wing">
             <h1>{t.articles}</h1>
-            <p>{t.emptyArticles}</p>
+            <Bookshelf language={language} />
             <Link
               className="secondary"
               to={
@@ -197,9 +197,7 @@ function MuseumPage() {
             </Link>
           </article>
         )}
-        {portfolio && (
-          <AcademicPortfolio language={language} returnUrl={returnUrl} />
-        )}
+        {portfolio && <AcademicPortfolio portfolio={portfolio} language={language} returnUrl={returnUrl} />}
       </main>
     </div>
   );

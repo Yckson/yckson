@@ -10,21 +10,30 @@ import {
   MeshStandardMaterial,
   Euler,
   Mesh,
+  Group,
   Object3D,
   PerspectiveCamera,
   NearestFilter,
+  TextureLoader,
+  SRGBColorSpace,
   Vector3,
 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { CrtGlobe } from "./CrtGlobe";
 import { PixelFinish } from "./PixelFinish";
+import { createLabPhone, phonePickup } from "./LabPhone";
+import phonePt from "./assets/phone-pt.png";
+import phoneEn from "./assets/phone-en.png";
 
-export const destinations = ["terminal", "wing", "books"] as const;
+import { isBoard } from "./catalog";
+
+export const destinations = ["terminal", "wing", "books", "arduino", "esp32", "fpga", "phone"] as const;
 export type Destination = (typeof destinations)[number];
 export type Stop = Destination | "reception";
 type Props = {
   entering: boolean;
+  atPhone: boolean;
   onScreenFramed: () => void;
   atTerminal: boolean; language: import("./catalog").Language;
   stop: Stop;
@@ -41,15 +50,16 @@ type Props = {
 };
 function destination(object: Object3D | null): Destination | null {
   while (object) {
-    if (object.name === "target_terminal") return "terminal";
-    if (object.name === "target_wing") return "wing";
-    if (object.name === "target_books") return "books";
+    const name = object.name;
+    const found = destinations.find(d => name === "target_" + d);
+    if (found) return found;
     object = object.parent;
   }
   return null;
 }
 export default function LabScene({
   entering,
+  atPhone,
   onScreenFramed,
   stop,
   yaw,
@@ -63,14 +73,44 @@ export default function LabScene({
   onReady,
   onLoss,
 }: Props) {
-  const { scene: model } = useLoader(
-    GLTFLoader,
+  const [hall, workbench] = useLoader(GLTFLoader, [
     import.meta.env.BASE_URL + "museum/hall.glb",
-  );
+    import.meta.env.BASE_URL + "museum/workbench.glb",
+  ]);
+  const phone = useMemo(() => createLabPhone(hall.scene), [hall]);
+  const phonePage = useLoader(TextureLoader, language === "pt" ? phonePt : phoneEn);
+  const model = useMemo(() => new Group().add(hall.scene, workbench.scene, phone.group), [hall, workbench, phone]);
   const { camera, gl, invalidate, size } = useThree();
   const first = useRef(true);
   const lastArrival = useRef<Stop | null>(null);
   const framedAt = useRef<number | null>(null);
+  const pickup = useRef<ReturnType<typeof phonePickup> | null>(null);
+  const pickupTime = useRef(0);
+  useLayoutEffect(() => {
+    phonePage.colorSpace = SRGBColorSpace;
+    phonePage.magFilter = phonePage.minFilter = NearestFilter;
+    phonePage.generateMipmaps = false;
+    phonePage.needsUpdate = true;
+    phone.display.material.map = phonePage;
+    phone.display.material.needsUpdate = true;
+    phone.display.visible = atPhone;
+    invalidate();
+  }, [phonePage, phone, atPhone, invalidate]);
+  useEffect(() => () => phone.dispose(), [phone]);
+  useLayoutEffect(() => {
+    if (!(camera instanceof PerspectiveCamera) || !entering || stop !== "phone") return;
+    pickup.current = phonePickup(camera, phone);
+    pickupTime.current = 0;
+    invalidate();
+    return () => {
+      pickup.current = null;
+      phone.handset.position.copy(phone.rest);
+      phone.handset.quaternion.copy(phone.restingRotation);
+      camera.zoom = 1;
+      camera.updateProjectionMatrix();
+      invalidate();
+    };
+  }, [camera, entering, stop, phone, invalidate]);
   const fixtures = useMemo(() => {
     const lights: {
       name: string;
@@ -107,7 +147,8 @@ export default function LabScene({
         const position = model
           .getObjectByName("aim_" + id)!
           .getWorldPosition(new Vector3());
-        if (id !== "books") position.y += id === "terminal" ? 0.88 : 0.91;
+        if (id === "wing" || id === "terminal") position.y += id === "terminal" ? 0.88 : 0.91;
+        if (id === "phone") position.y += .13;
         return { id, position };
       }),
     [model],
@@ -116,7 +157,7 @@ export default function LabScene({
   const pose = useMemo(() => {
     const target = new Object3D();
     model.getObjectByName("eye_" + stop)!.getWorldPosition(target.position);
-    if (entering) {
+    if (entering && stop === "terminal") {
       const screen = model.getObjectByName("CRT_globe_display") as Mesh;
       screen.geometry.computeBoundingBox();
       const bounds = screen.geometry.boundingBox!;
@@ -178,6 +219,20 @@ export default function LabScene({
     return () => gl.domElement.removeEventListener("webglcontextlost", onLoss);
   }, [model, gl, onReady, onLoss]);
   useFrame(({ clock }, dt) => {
+    if (pickup.current) {
+      for (const el of Object.values(signs.current)) if (el) el.hidden = true;
+      if (pickupTime.current === Infinity) return;
+      // Render the final pose for one frame before navigation, including reduced motion.
+      const finished = pickupTime.current >= 2.38;
+      pickupTime.current += reduced ? 3 : Math.min(dt, .14);
+      pickup.current(pickupTime.current);
+      if (finished) {
+        pickupTime.current = Infinity;
+        onScreenFramed();
+      }
+      invalidate();
+      return;
+    }
     const a =
       first.current || reduced ? 1 : 1 - Math.exp(-8 * Math.min(dt, 0.08));
     first.current = false;
@@ -206,9 +261,14 @@ export default function LabScene({
     for (const { id, position } of guidePoints) {
       const el = signs.current[id];
       if (!el) continue;
+      if (isBoard(stop)) {
+        el.hidden = !isBoard(id);
+        continue;
+      }
       projected.copy(position).project(camera);
       el.hidden =
         entering ||
+        id === "esp32" || id === "fpga" ||
         projected.z < -1 ||
         projected.z > 1 ||
         Math.abs(projected.x) > 1.35 ||
@@ -220,10 +280,10 @@ export default function LabScene({
           Math.min(size.width - margin, ((projected.x + 1) * size.width) / 2),
         ) + "px";
       el.style.top =
-        Math.max(
+        (id === "phone" && stop === "phone" ? size.height - 24 : Math.max(
           Math.min(130, size.height * 0.3),
           ((1 - projected.y) * size.height) / 2,
-        ) + "px";
+        )) + "px";
     }
     if (
       camera.position.distanceToSquared(pose.position) > 0.000001 ||
@@ -272,7 +332,7 @@ export default function LabScene({
           if (d && e.delta < 5) onPick(d);
         }}
       />
-      <CrtGlobe model={model} reduced={reduced} atTerminal={atTerminal} language={language} entering={entering} />
+      <CrtGlobe model={model} reduced={reduced} atTerminal={atTerminal} language={language} entering={entering && stop === "terminal"} />
       <PixelFinish model={model} active={active} />
     </>
   );

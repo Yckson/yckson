@@ -13,6 +13,7 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { boards, isBoard } from "./catalog";
 
 const printShader = {
   uniforms: {
@@ -95,9 +96,18 @@ export function PixelFinish({
     pipeline.surface.setSize(pixels.x, pixels.y);
     pipeline.finish.uniforms.texel.value.set(1 / pixels.x, 1 / pixels.y);
     pipeline.composer.setSize(size.width, size.height);
-    const target = active && model.getObjectByName("target_" + active);
-    pipeline.outline.selectedObjects = target ? [target] : [];
-    pipeline.outline.enabled = Boolean(target);
+    const selected = [];
+    if (active) {
+      const ids = isBoard(active)
+        ? Object.keys(boards).filter(id => isBoard(id) && boards[id] === boards[active])
+        : [active];
+      for (const id of ids) {
+        const object = model.getObjectByName("target_" + id);
+        if (object) selected.push(object);
+      }
+    }
+    pipeline.outline.selectedObjects = selected;
+    pipeline.outline.enabled = selected.length > 0;
     invalidate();
   }, [active, model, size, gl, pipeline, invalidate]);
   useEffect(

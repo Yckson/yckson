@@ -172,6 +172,22 @@
 .waypoint[hidden] {
   display: none;
 }
+.board-commands {
+  position: absolute;
+  inset: auto 10px max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 5px;
+  pointer-events: none;
+}
+.board-commands .waypoint {
+  position: static;
+  transform: none;
+  pointer-events: auto;
+  max-width: 46%;
+}
+.board-commands .waypoint::after, .board-commands .waypoint-glyph { display: none; }
 .waypoint::after {
   content: "";
   position: absolute;
