@@ -88,6 +88,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
           </svg>
           GitHub
         </a>
+        <a href="mailto:williamgabrielbraga14@gmail.com">williamgabrielbraga14@gmail.com</a>
         </div>
       </div>
     </div>
