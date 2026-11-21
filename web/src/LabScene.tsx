@@ -274,16 +274,16 @@ export default function LabScene({
         Math.abs(projected.x) > 1.35 ||
         Math.abs(projected.y) > 0.92;
       const margin = el.offsetWidth / 2 + 8;
-      el.style.left =
+      el.style.setProperty("--waypoint-x",
         Math.max(
           margin,
           Math.min(size.width - margin, ((projected.x + 1) * size.width) / 2),
-        ) + "px";
-      el.style.top =
+        ) + "px");
+      el.style.setProperty("--waypoint-y",
         (id === "phone" && stop === "phone" ? size.height - 24 : Math.max(
           Math.min(130, size.height * 0.3),
           ((1 - projected.y) * size.height) / 2,
-        )) + "px";
+        )) + "px");
     }
     if (
       camera.position.distanceToSquared(pose.position) > 0.000001 ||

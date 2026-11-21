@@ -162,9 +162,9 @@ function MuseumPage() {
               </span>
             </div>
             {portfolios.map((item) => (
+              <div key={item.slug}>
               <Link
                 className="entry"
-                key={item.slug}
                 to={root + "/portfolio/" + item.slug}
               >
                 <span className="chip" aria-hidden="true">
@@ -175,6 +175,11 @@ function MuseumPage() {
                   ↗
                 </span>
               </Link>
+              <Link className="guided-entry" to={root + "/museum?guide=" + item.slug}
+                aria-label={(language === "pt" ? "Encontrar no laboratório: " : "Find in the lab: ") + item.title[language]}>
+                {language === "pt" ? "Encontrar no laboratório" : "Find in the lab"} ↗
+              </Link>
+              </div>
             ))}
             <Link className="secondary" to={root + "/articles"}>
               {t.articles} ↗
