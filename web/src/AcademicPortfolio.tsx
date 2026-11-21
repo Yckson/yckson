@@ -260,6 +260,29 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
             "I completed all the web development courses Danki Code offered at the time."
           ))}
         </>}
+        {isMicro && <div className="academic-entry">
+          <span className="academic-meta">ChampionCHIP eXperience</span>
+          <div>
+            <h3>{t("Projeto de chips com ChipInventor", "Chip design with ChipInventor")}</h3>
+            <p>{t("Cursei nove módulos e estudei como uma descrição RTL em Verilog se transforma no layout de um chip. Conheço o fluxo completo, incluindo síntese lógica, posicionamento de células, roteamento e geração do arquivo GDSII.",
+              "I completed nine modules and studied how a Verilog RTL description becomes a chip layout. I am familiar with the full flow, including logic synthesis, cell placement, routing and GDSII generation.")}</p>
+            <details>
+              <summary>{t("Ver os nove módulos", "View the nine modules")}</summary>
+              <ul>{[
+                t("Introdução aos Semicondutores", "Introduction to Semiconductors"),
+                t("Lógica e Design Digital", "Digital Logic and Design"),
+                t("Fundamentos dos Projetos de Sistemas Digitais", "Fundamentals of Digital System Design"),
+                t("Integração de Sistemas Digitais e Testbenches", "Digital System Integration and Testbenches"),
+                t("Síntese de Circuitos Digitais e Análise dos Resultados", "Digital Circuit Synthesis and Analysis of Results"),
+                t("Design de um Core RISC-V", "Designing a RISC-V Core"),
+                t("Prototipagem em FPGA na Nuvem", "Cloud FPGA Prototyping"),
+                t("Fundamentos e Modelagem dos Circuitos Analógicos", "Analog Circuit Fundamentals and Modeling"),
+                t("Propriedade Intelectual em Semicondutores", "Intellectual Property in Semiconductors"),
+              ].map(name => <li key={name}>{name}</li>)}</ul>
+            </details>
+            <a className="academic-source" href="https://championchipexperience.org/">{t("Ver programa", "View program")} ↗</a>
+          </div>
+        </div>}
         {(isMicro || isEmbedded) && renderEntry("UFS · 2024.1", t("Sistemas digitais", "Digital systems"), t("Cursei Fundamentos e Prática de Sistemas Digitais.", "I studied digital systems theory and completed the accompanying lab."))}
         {(isMicro || isEmbedded) && renderEntry("UFS · 2024.2", t("Arquitetura de Computadores", "Computer Architecture"), isEmbedded
           ? t("Cursei Arquitetura de Computadores e Sistemas Embarcados.", "I took Computer Architecture and Embedded Systems.")

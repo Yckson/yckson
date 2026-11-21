@@ -86,6 +86,9 @@ profiles = {
                  ("Trabalhei com o caminho de dados para o conjunto de instruções RV32I nos estudos de arquitetura de processadores.",
                   "Worked on the datapath for the RV32I instruction set as part of my processor architecture studies."), GITHUB + "/RISC-V-RV32I")]),
             (("Comunidade e formação complementar", "Technical community and professional development"), [
+                (("ChipInventor · ChampionCHIP eXperience",) * 2,
+                 ("Cursei nove módulos, incluindo projeto de um núcleo RISC-V e prototipagem em FPGA na nuvem. Estudei o fluxo de Verilog RTL a GDSII, da síntese lógica ao posicionamento e roteamento.",
+                  "Completed nine modules, including RISC-V core design and cloud FPGA prototyping. Studied the Verilog RTL-to-GDSII flow, from logic synthesis through placement and routing."), "https://championchipexperience.org/"),
                 (("IEEE CASS · UFS · 2025",) * 2,
                  ("Ajudei a organizar o primeiro IEEE CASS Sergipe Workshop, reunindo estudantes, pesquisadores e profissionais da indústria de circuitos e sistemas.",
                   "Helped organize the first IEEE CASS Sergipe Workshop, bringing together students, researchers and industry professionals working on circuits and systems."), None),
