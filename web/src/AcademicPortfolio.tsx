@@ -66,11 +66,11 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
       <div>
         <img src={import.meta.env.BASE_URL + "academic/william.jpg"} width="1080" height="1080" alt={t("William Gabriel ao ar livre no campus", "William Gabriel outdoors on campus")} />
         <div className="academic-cv">
-          <strong>{t("Baixar currículo (PDF)", "Download résumé (PDF)")}</strong>
+          <strong>{t("Currículo", "CV")}</strong>
           {(pt ? ["pt", "en"] : ["en", "pt"]).map(lang =>
             <a key={lang} href={import.meta.env.BASE_URL + "cv/William-Braga-" + portfolio.slug + "-" + lang + ".pdf"}
               download hrefLang={lang === "pt" ? "pt-BR" : "en"}
-              aria-label={lang === "pt" ? t("Baixar currículo em português (PDF)", "Download résumé in Portuguese (PDF)") : t("Baixar currículo em inglês (PDF)", "Download résumé in English (PDF)")}>
+              aria-label={lang === "pt" ? t("Currículo em português", "CV in Portuguese") : t("Currículo em inglês", "CV in English")}>
               <span lang={lang}>{lang === "pt" ? "Português" : "English"}</span>
             </a>
           )}
