@@ -46,6 +46,10 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
   const entry = cs ? renderEntry : omit;
   const embeddedEntry = cs || isEmbedded ? renderEntry : omit;
   const digitalEntry = cs || isMicro ? renderEntry : omit;
+  const coreTechPartnerships = () => renderEntry("CoreTECH · UFS", t("Parcerias com a Toradex e a Espressif", "Partnerships with Toradex and Espressif"), t(
+          "Participei da criação da liga de hardware da UFS e das parcerias com a Toradex e a Espressif. Na CoreTECH, coordenei estudantes nos testes de módulos antes do lançamento e no desenvolvimento de drivers e aplicações de exemplo.",
+          "I helped establish the UFS hardware league and its partnerships with Toradex and Espressif. At CoreTECH, I coordinated students testing pre-release modules and developing drivers and example applications."
+        ));
   return <article className="academic">
     <div className="academic-cover">
       <div>
@@ -167,10 +171,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         ))}
       </>}
       {section === "achievements" && <>
-        {isEmbedded && renderEntry("CoreTECH · UFS", t("Parcerias com a Toradex e a Espressif", "Partnerships with Toradex and Espressif"), t(
-          "Participei da criação da liga de hardware da UFS e das parcerias com a Toradex e a Espressif. Na CoreTECH, coordenei estudantes nos testes de módulos antes do lançamento e no desenvolvimento de drivers e aplicações de exemplo.",
-          "I helped establish the UFS hardware league and its partnerships with Toradex and Espressif. At CoreTECH, I coordinated students testing pre-release modules and developing drivers and example applications."
-        ))}
+        {isEmbedded && coreTechPartnerships()}
         {isMicro && renderEntry("CSBC 2026 · Gramado", "Cadathlon", t(
           "Minha equipe conquistou o primeiro lugar entre as equipes do Nordeste no Cadathlon, em Gramado.",
           "At the Cadathlon in Gramado, my team placed first among teams from Northeast Brazil."
@@ -185,6 +186,7 @@ export function AcademicPortfolio({ portfolio, language, returnUrl }: { portfoli
         ))}
       </>}
       {section === "community" && <>
+        {isMicro && coreTechPartnerships()}
         {entry("2026", "IEEEXtreme 20.0", t(
           "Minha equipe ficou em 15º lugar no Brasil nessa competição internacional de programação de 24 horas. Fomos a única equipe brasileira a resolver o desafio de engenharia reversa da edição.",
           "My team placed 15th in Brazil in this international 24-hour programming competition. We were the only Brazilian team to solve this edition’s reverse engineering challenge."
