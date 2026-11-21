@@ -19,6 +19,7 @@ import { TourBoundary } from "./TourBoundary";
 import { AcademicPortfolio } from "./AcademicPortfolio";
 import { useDisplayPreferences } from "./Accessibility";
 import { LabLoading } from "./LabLoading";
+import { Bookshelf } from "./Bookshelf";
 import { metadata, updateHead } from "./seo";
 import "./style.css";
 import "./lab.css";
@@ -31,7 +32,6 @@ const copy = {
     title: "Portfolio Hub",
     index: "Portfolios",
     articles: "Articles",
-    emptyArticles: "No articles published yet.",
     wing: "Portfolio wing",
     back: "Return to the lab",
     skip: "Skip to content",
@@ -42,7 +42,6 @@ const copy = {
     title: "Hub de Portfólios",
     index: "Portfólios",
     articles: "Artigos",
-    emptyArticles: "Nenhum artigo publicado por enquanto.",
     wing: "Ala de portfólio",
     back: "Voltar ao laboratório",
     skip: "Pular para o conteúdo",
@@ -185,7 +184,7 @@ function MuseumPage() {
         {articles && (
           <article className="wing">
             <h1>{t.articles}</h1>
-            <p>{t.emptyArticles}</p>
+            <Bookshelf language={language} />
             <Link
               className="secondary"
               to={

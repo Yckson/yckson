@@ -47,3 +47,8 @@
   font-weight: 600;
 }
 .academic-profiles a:hover, .academic-profiles a:focus-visible { text-decoration: underline; }
+.publication-shelf { margin: 2rem 0; max-width: 72ch; }
+.publication-shelf details { padding: 1rem 1.25rem; border-inline-start: 4px solid var(--ink); border-block-end: 1px solid var(--edge); }
+.publication-shelf summary { cursor: pointer; }
+.publication-shelf summary strong { display: block; margin-top: .4rem; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.3; }
+.publication-shelf .publication-authors { font-size: .95rem; font-weight: 600; }
